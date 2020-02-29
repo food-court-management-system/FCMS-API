@@ -1,5 +1,6 @@
 package xiaolin.web;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,8 @@ import xiaolin.config.jwt.JwtUtil;
 import xiaolin.entities.User;
 import xiaolin.services.IUserService;
 import xiaolin.util.FCMSUtil;
+
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -61,7 +64,11 @@ public class UserController {
 
         final UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
-        final String jwt  = jwtUtil.generateToken(userDetails);
+        final String jwt  = jwtUtil.generateToken(userDetails, role);
+
+        Claims claims = jwtUtil.extractAllClaims(jwt);
+
+        System.out.println(claims.get("role"));
 
         return new ResponseEntity<>(jwt, HttpStatus.OK);
     }

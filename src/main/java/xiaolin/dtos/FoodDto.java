@@ -24,7 +24,7 @@ public class FoodDto {
         if (foodDto.getFoodId() != null) {
             result.setId(foodDto.getFoodId());
         }
-        result.setPrice(foodDto.getPrice());
+        result.setOriginPrice(foodDto.getPrice());
         if (foodDto.getFoodDescription() != null) {
             result.setFoodDescription(foodDto.getFoodDescription());
         }

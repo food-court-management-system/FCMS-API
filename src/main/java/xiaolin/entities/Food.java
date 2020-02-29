@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "tblFoods")
@@ -40,5 +41,5 @@ public class Food implements Serializable {
     private String foodImage;
 
     @OneToMany(targetEntity = Rating.class, mappedBy = "food")
-    private Rating rating;
+    private List<Rating> rating;
 }
