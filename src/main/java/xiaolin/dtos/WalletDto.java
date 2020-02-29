@@ -16,14 +16,4 @@ public class WalletDto {
     public WalletDto() {
     }
 
-    public Wallet mapToWallet(WalletDto walletDto) {
-        Wallet result = new Wallet();
-        if (walletDto.getWalletId() != null) {
-            result.setId(walletDto.getWalletId());
-        }
-        result.setBalances(walletDto.getBalance());
-        result.setInUseBalances(walletDto.getInUseBalance());
-        result.setActive(walletDto.isActive());
-        return result;
-    }
 }

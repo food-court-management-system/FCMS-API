@@ -21,33 +21,4 @@ public class UserDto {
 
     public UserDto() {}
 
-    public User mapToUser(UserDto userDto) {
-        User result = new User();
-        if (userDto.getUserId() != null) {
-            result.setId(userDto.getUserId());
-        }
-        if (userDto.getFName() != null) {
-            result.setFName(userDto.getFName());
-        }
-        if (userDto.getLName() != null) {
-            result.setLName(userDto.getLName());
-        }
-        result.setAge(userDto.getAge());
-        if (userDto.getFoodStall() != null) {
-            result.setFoodStall(userDto.getFoodStall());
-        }
-        if (userDto.getUsername() != null) {
-            result.setUserName(userDto.getUsername());
-        }
-        if (userDto.getPassword() != null) {
-            result.setPassword(userDto.getPassword());
-        }
-        if (userDto.getRole() != null) {
-            result.setRole(userDto.getRole());
-        }
-        result.setActive(userDto.isActive());
-
-
-        return result;
-    }
 }

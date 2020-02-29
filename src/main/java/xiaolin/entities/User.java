@@ -41,13 +41,4 @@ public class User implements Serializable {
     @Column(name = "is_active")
     private boolean isActive;
 
-    public User() {
-    }
-
-    public User(String userName, String password, String role, boolean isActive) {
-        this.userName = userName;
-        this.password = password;
-        this.role = role;
-        this.isActive = isActive;
-    }
 }

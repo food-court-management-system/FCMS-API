@@ -20,22 +20,5 @@ public class CartDto {
 
     public CartDto() { }
 
-    public Cart mapToCart(CartDto cartDto) {
-        Cart result = new Cart();
-        if (cartDto.getId() != null) {
-            result.setId(cartDto.getId());
-        }
-        result.setTotalPrice(cartDto.getTotalPrice());
-        result.setCheckOut(cartDto.isCheckOut());
-        if (cartDto.getCartStatus() != null) {
-            result.setCartStatus(cartDto.getCartStatus());
-        }
-        if (cartDto.getPurchaseDate() != null) {
-            result.setPurchaseDate(cartDto.getPurchaseDate());
-        }
-        if (cartDto.getCustomerOwner() != null) {
-            result.setCustomerOwner(cartDto.getCustomerOwner());
-        }
-        return result;
-    }
+
 }

@@ -15,15 +15,15 @@ public class UserService implements IUserService{
 
     @Override
     public void insertUser() {
-        String username = "admin";
-        String password = "123456789";
-        String role = "admin";
-        boolean isActive = true;
+//        String username = "admin";
+//        String password = "123456789";
+//        String role = "admin";
+//        boolean isActive = true;
 
-        FCMSUtil util = new FCMSUtil();
-        String encodePassword = util.encodePassword(password);
-        User user = new User(username, encodePassword, role, isActive);
-        userRepository.save(user);
+//        FCMSUtil util = new FCMSUtil();
+//        String encodePassword = util.encodePassword(password);
+//        User user = new User(username, encodePassword, role, isActive);
+//        userRepository.save(user);
     }
 
     @Override
