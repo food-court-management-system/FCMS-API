@@ -32,5 +32,8 @@ public class CartItem implements Serializable {
     @JoinColumn(name = "cart_id")
     private Cart cartOwner;
 
+    @Column(name = "purchased_price")
+    private float purchasedPrice;
+
     public enum FoodStatus{DONE, INPROGRESS, QUEUE, DELIVERY, FINISH}
 }

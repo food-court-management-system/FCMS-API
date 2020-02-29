@@ -19,8 +19,11 @@ public class Food implements Serializable {
     @Column(name = "food_name", length = 200)
     private String foodName;
 
-    @Column(name = "price")
-    private float price;
+    @Column(name = "origin_price")
+    private float originPrice;
+
+    @Column(name = "retail_price")
+    private float retailPrice;
 
     @Column(name = "foodDescription", length = 1000)
     private String foodDescription;
@@ -35,4 +38,7 @@ public class Food implements Serializable {
 
     @Column(name = "foodStallImage", columnDefinition = "VARCHAR", length = 1000)
     private String foodImage;
+
+    @OneToMany(targetEntity = Rating.class, mappedBy = "food")
+    private Rating rating;
 }

@@ -31,5 +31,8 @@ public class Customer implements Serializable {
     private String provider;
 
     @OneToMany(targetEntity = Cart.class, mappedBy = "customerOwner", fetch = FetchType.LAZY)
-    private List<Cart> shoppingCart = new ArrayList<>();
+    private List<Cart> shoppingCart;
+
+    @OneToMany(targetEntity = Rating.class, mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Rating> ratings;
 }
