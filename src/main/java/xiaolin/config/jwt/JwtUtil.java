@@ -16,14 +16,11 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    @Autowired
-    IUserRepository userRepository;
-
     private final String SECRET_KEY = "FCMS_SECRET_KEY";
     private final int EXPIRED_TIME = 864_000_000; // 10 days
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("username").toString();
     }
 
     public Date extractExpiration(String token) {
@@ -45,12 +42,13 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails, String role) {
         Map<String , Object> claims = new HashMap<>();
+        claims.put("username", userDetails.getUsername());
         claims.put("role", role);
-        return createToken(claims, userDetails.getUsername());
+        return createToken(claims);
     }
 
-    private String createToken(Map<String, Object> claims, String username) {
-        return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+    private String createToken(Map<String, Object> claims) {
+        return Jwts.builder().setClaims(claims).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRED_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
     }

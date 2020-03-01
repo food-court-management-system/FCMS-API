@@ -68,8 +68,6 @@ public class UserController {
 
         Claims claims = jwtUtil.extractAllClaims(jwt);
 
-        System.out.println(claims.get("role"));
-
         return new ResponseEntity<>(jwt, HttpStatus.OK);
     }
 

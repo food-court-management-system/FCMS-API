@@ -21,13 +21,9 @@ public class FCMSUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String password = userRepository.getUserPassword(username);
-        String encodedPwd;
-        if (password != null) {
-            FCMSUtil util = new FCMSUtil();
-            encodedPwd = util.encodePassword(password);
-        } else {
+        if (password == null) {
             throw new UsernameNotFoundException("Can not found that user");
         }
-        return new User(username, encodedPwd, new ArrayList<>());
+        return new User(username, password, new ArrayList<>());
     }
 }
