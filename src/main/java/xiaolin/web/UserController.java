@@ -17,6 +17,7 @@ import xiaolin.util.FCMSUtil;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
     
     @Autowired
@@ -41,7 +42,7 @@ public class UserController {
         return userService.getUserInfo(username);
     }
 
-    @RequestMapping(value = {"/api/v1/user/login"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestParam("username") String username,
                                                   @RequestParam("password") String password) throws Exception {
