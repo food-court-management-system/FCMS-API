@@ -17,15 +17,15 @@ public class FoodCourtInformation implements Serializable {
     @Column(name = "food_court_id")
     private Long foodCourtId;
 
-    @Column(name = "foodStallName")
+    @Column(name = "foodCourtName")
     private String foodCourtName;
 
-    @Column(name = "foodDescription", length = Integer.MAX_VALUE)
+    @Column(name = "foodCourtDescription", length = Integer.MAX_VALUE)
     private String foodCourtDescription;
 
     @Column(name = "address")
     private String foodCourtAddress;
 
-    @Column(name = "foodStallImage", columnDefinition = "VARCHAR", length = 5000)
+    @Column(name = "foodCourtImage", columnDefinition = "VARCHAR", length = 5000)
     private String foodCourtImage;
 }

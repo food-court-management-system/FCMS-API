@@ -16,7 +16,7 @@ public class CartDto {
     private boolean isCheckOut;
     private Enum<Cart.Status> cartStatus;
     private Calendar purchaseDate;
-    private Customer customerOwner;
+//    private Customer customerOwner;
 
     public CartDto() { }
 

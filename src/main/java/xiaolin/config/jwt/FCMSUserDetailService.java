@@ -22,7 +22,12 @@ public class FCMSUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String password = userRepository.getUserPassword(username);
         if (password == null) {
-            throw new UsernameNotFoundException("Can not found that user");
+            int indexOfAt = username.indexOf("@");
+            String user = username.substring(0, indexOfAt);
+            System.out.println("User:  " + user);
+            String id = username.substring(indexOfAt + 1);
+            System.out.println("ID: " + id);
+            return new User(user, FCMSUtil.encodePassword(id), new ArrayList<>());
         }
         return new User(username, password, new ArrayList<>());
     }

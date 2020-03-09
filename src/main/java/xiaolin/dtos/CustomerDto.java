@@ -19,8 +19,8 @@ public class CustomerDto {
     private String email;
     private boolean isActive;
     private String provider;
-    private List<Cart> shoppingCart;
-    private List<Rating> ratings;
+//    private List<Cart> shoppingCart;
+//    private List<Rating> ratings;
 
     public CustomerDto() {
     }
