@@ -16,7 +16,7 @@ public class CustomerController {
 //    IRatingService ratingService;
 
 //    @ResponseBody
-//    @RequestMapping(value = "/api/v1/customer/rate/{id:\\d+}", method = RequestMethod.POST)
+//    @RequestMapping(value = "/customer/rate/{id:\\d+}", method = RequestMethod.POST)
 //    public Rating ratingFoodStall(@PathVariable("id") Long foodStallId) {
 //
 //

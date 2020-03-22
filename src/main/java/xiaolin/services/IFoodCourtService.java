@@ -1,6 +1,5 @@
 package xiaolin.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xiaolin.entities.FoodCourtInformation;
 
@@ -8,4 +7,6 @@ import xiaolin.entities.FoodCourtInformation;
 public interface IFoodCourtService {
 
     FoodCourtInformation getFoodCourtInformation();
+
+    FoodCourtInformation saveFoodCourtInformation(FoodCourtInformation foodCourtInformation);
 }

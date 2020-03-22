@@ -14,13 +14,14 @@ import xiaolin.services.ICartService;
 import xiaolin.util.FCMSUtil;
 
 @RestController
+@RequestMapping("/cart")
 public class CartController {
 
     @Autowired
     ICartService cartService;
 
     @ResponseBody
-    @RequestMapping(value = "/api/v1/cart/history/{id:\\d+}/detail")
+    @RequestMapping(value = "/history/{id:\\d+}/detail")
     public ResponseEntity<Object> getHistoryOrder(@PathVariable("id") Long customerId) {
         return new ResponseEntity<>(cartService.getHistoryOrder(customerId),HttpStatus.OK);
     }

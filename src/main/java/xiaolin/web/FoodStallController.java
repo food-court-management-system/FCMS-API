@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/stall")
 public class FoodStallController {
 
     @Autowired
@@ -24,31 +25,31 @@ public class FoodStallController {
     @Autowired
     IFoodService foodService;
 
-    @RequestMapping(value = "/api/v1/stall/food-stalls", method = RequestMethod.GET)
+    @RequestMapping(value = "/food-stalls", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> listAllFoodStall() {
         return new ResponseEntity<>(foodStallService.listAllFoodStall(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> searchFoodStall(@RequestParam("name") String foodStallName) {
         return new ResponseEntity<>(foodStallService.searchFoodStallByName(foodStallName), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/filter/rate", method = RequestMethod.GET)
+    @RequestMapping(value = "/filter/rate", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> filterFoodStallByRating() {
         return new ResponseEntity<>(foodStallService.filterFoodStallByRating(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/filter/{tag}", method = RequestMethod.GET)
+    @RequestMapping(value = "/filter/{tag}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> filterFoodStallByCategory(@PathVariable("tag") String category) {
         return new ResponseEntity<>(foodStallService.filterFoodStallByCategory(category), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/food-stalls/{id:\\d+}/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/food-stalls/{id:\\d+}/detail", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getFoodStallDetail(@PathVariable("id") Long id) {
         if (id == null) {
@@ -66,7 +67,7 @@ public class FoodStallController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/{id:\\d+}/add-food", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id:\\d+}/add-food", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> addNewFood(@PathVariable("id") Long foodStallId,
                         @RequestBody FoodDto dto) {
@@ -80,7 +81,7 @@ public class FoodStallController {
         return new ResponseEntity<>(foodService.addNewFood(food), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/{id:\\d+}/foods/{food-id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id:\\d+}/foods/{food-id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<Object> deleteFood(@PathVariable("id") Long foodStallId,
                                              @PathVariable("food-id") Long foodId) {
@@ -94,7 +95,7 @@ public class FoodStallController {
         return new ResponseEntity<>("Successfully delete" ,HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/stall/{id:\\d+}/foods/{food-id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id:\\d+}/foods/{food-id}", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Object> updateFood(@PathVariable("id") Long foodStallId,
                                              @PathVariable("food-id") Long foodId) {

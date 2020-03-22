@@ -6,12 +6,13 @@ import xiaolin.dtos.FoodDto;
 import xiaolin.services.IFoodService;
 
 @RestController
+@RequestMapping("/food")
 public class FoodController {
 
     @Autowired
     private IFoodService foodService;
 
-    @RequestMapping(value = "/api/v1/food/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public boolean addNewFood(@RequestBody FoodDto dto) {
         boolean result = true;

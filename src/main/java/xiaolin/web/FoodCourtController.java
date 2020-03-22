@@ -6,10 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.mapper.FCMSMapper;
+import xiaolin.entities.FoodCourtInformation;
 import xiaolin.entities.User;
 import xiaolin.services.IFoodCourtService;
 
 @RestController
+@RequestMapping("food-court")
 public class FoodCourtController {
 
     @Autowired
@@ -18,13 +20,13 @@ public class FoodCourtController {
 //    @Autowired
 
 
-    @RequestMapping(value = "/api/v1/food-court/about", method = RequestMethod.GET)
+    @RequestMapping(value = "/about", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getFoodCourtInformation() {
         return new ResponseEntity<>(foodCourtService.getFoodCourtInformation(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/api/v1/food-court/create/cashier", method = RequestMethod.POST)
+    @RequestMapping(value = "/cashier", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> createNewCashier(@RequestBody UserDto dto) {
         if (dto.getUsername() != null) {
@@ -33,5 +35,12 @@ public class FoodCourtController {
         dto.setRole("cashier");
         User user = FCMSMapper.mapToUser(dto);
         return null;
+    }
+
+    @RequestMapping(value = "/information", method = RequestMethod.POST)
+    @ResponseBody
+    public FoodCourtInformation createFoodCourtInformation(@RequestBody FoodCourtInformation foodCourtInformation) {
+        System.out.println("ABC");
+        return foodCourtService.saveFoodCourtInformation(foodCourtInformation);
     }
 }

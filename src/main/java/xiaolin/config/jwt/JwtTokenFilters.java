@@ -1,6 +1,5 @@
 package xiaolin.config.jwt;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.fluent.Request;
 import org.springframework.core.env.Environment;
@@ -46,7 +45,7 @@ public class JwtTokenFilters extends OncePerRequestFilter {
             return;
         }
 
-        if (prefix.startsWith("Google ") || prefix.startsWith("Facebook ")) {
+        if (prefix.equals("Google") || prefix.equals("Facebook")) {
             String email, id, link;
 
             if (prefix.startsWith("Google")) {
@@ -70,10 +69,9 @@ public class JwtTokenFilters extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
-            return;
         }
 
-        if (prefix.startsWith("Bearer ")) {
+        else if (prefix.equals("Bearer")) {
             username = jwtUtil.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.fcmsUserDetailService.loadUserByUsername(username);
@@ -85,7 +83,6 @@ public class JwtTokenFilters extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
-            return;
         }
     }
 }

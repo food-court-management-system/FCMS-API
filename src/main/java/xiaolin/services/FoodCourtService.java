@@ -1,6 +1,7 @@
 package xiaolin.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xiaolin.dao.IFoodCourtRepository;
 import xiaolin.dtos.FoodCourtInformationDto;
@@ -15,15 +16,22 @@ public class FoodCourtService implements IFoodCourtService{
 
     @Override
     public FoodCourtInformation getFoodCourtInformation() {
-        FoodCourtInformation result = foodCourtRepository.getFoodCourtInformation();
-        FoodCourtInformationDto dto = null;
+        FoodCourtInformation result = foodCourtRepository.findFirstByOrderByFoodCourtIdDesc();
+
         if (result != null) {
-            dto = new FoodCourtInformationDto();
+            FoodCourtInformationDto dto = new FoodCourtInformationDto();
             dto.setAddress(result.getFoodCourtAddress());
             dto.setFoodCourtDescription(result.getFoodCourtDescription());
             dto.setFoodCourtImage(result.getFoodCourtImage());
             dto.setFoodCourtName(result.getFoodCourtName());
+            return FCMSMapper.mapToFoodCourtInformation(dto);
         }
-        return FCMSMapper.mapToFoodCourtInformation(dto);
+
+        return null;
+    }
+
+    @Override
+    public FoodCourtInformation saveFoodCourtInformation(FoodCourtInformation foodCourtInformation) {
+        return foodCourtRepository.save(foodCourtInformation);
     }
 }

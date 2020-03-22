@@ -49,7 +49,7 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @RequestMapping(value = "/api/v1/customer/social-account", method = RequestMethod.POST)
+    @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> loginSocialAccount(@RequestParam("accessToken") String accessToken,
                                                      @RequestParam("provider") String provider) {
@@ -89,16 +89,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
-    @RequestMapping(value = {"/api/v1/user/sign-in"}, method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity User() {
-        userService.insertUser();
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(value = {"/api/v1/user/detail"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/detail"}, method = RequestMethod.GET)
     @ResponseBody
     public User getUserDetail(@RequestParam("username") String username){
         return userService.getUserInfo(username);
@@ -121,18 +112,17 @@ public class UserController {
         String encodedPwd = fcmsUtil.encodePassword(password);
         String role = userService.getUserRole(username, encodedPwd);
         if (role == null){
-//            responseMsg = "Wrong username and password. Please log in again";
-//            return new ResponseEntity<>(responseMsg, HttpStatus.NOT_ACCEPTABLE);
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", "Wrong username and password. Please log in again");
+            jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
 
-        final UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
+        UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
-        final String jwt  = jwtUtil.generateToken(userDetails, role);
-
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
+        String jwt  = jwtUtil.generateToken(userDetails, role);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("token", jwt);
+        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
     }
 
     @ResponseBody
