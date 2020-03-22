@@ -9,8 +9,8 @@ import xiaolin.entities.Wallet;
 public class WalletDto {
 
     private Long walletId;
-    private long balance;
-    private long inUseBalance;
+    private float balance;
+    private float inUseBalance;
     private boolean isActive;
 
     public WalletDto() {

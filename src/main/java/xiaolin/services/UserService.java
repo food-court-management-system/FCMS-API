@@ -3,6 +3,8 @@ package xiaolin.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xiaolin.dao.IUserRepository;
+import xiaolin.dtos.UserDto;
+import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.User;
 import xiaolin.util.FCMSUtil;
 
@@ -15,15 +17,33 @@ public class UserService implements IUserService{
 
     @Override
     public void insertUser() {
-//        String username = "admin";
-//        String password = "123456789";
-//        String role = "admin";
-//        boolean isActive = true;
+        String username = "admin";
+        String password = "123456789";
+        String role = "admin";
+        boolean isActive = true;
 
-//        FCMSUtil util = new FCMSUtil();
-//        String encodePassword = util.encodePassword(password);
+        FCMSUtil util = new FCMSUtil();
+        String encodePassword = util.encodePassword(password);
+        UserDto dto = new UserDto();
+        dto.setUsername(username);
+        dto.setPassword(encodePassword);
+        dto.setRole(role);
+        dto.setActive(isActive);
+        User user = FCMSMapper.mapToUser(dto);
 //        User user = new User(username, encodePassword, role, isActive);
-//        userRepository.save(user);
+        userRepository.save(user);
+        user.setUserName("cashier_1");
+        user.setRole("cashier");
+        userRepository.save(user);
+        user.setUserName("cashier_2");
+        userRepository.save(user);
+        user.setUserName("food_stall_1");
+        user.setRole("foodstall");
+        userRepository.save(user);
+        user.setUserName("food_stall_2");
+        userRepository.save(user);
+        user.setUserName("food_stall_3");
+        userRepository.save(user);
     }
 
     @Override

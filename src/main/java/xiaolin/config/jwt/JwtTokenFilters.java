@@ -1,5 +1,9 @@
 package xiaolin.config.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.fluent.Request;
+import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +25,9 @@ public class JwtTokenFilters extends OncePerRequestFilter {
     private FCMSUserDetailService fcmsUserDetailService;
 
     @Autowired
+    private Environment environment;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Override
@@ -28,24 +35,57 @@ public class JwtTokenFilters extends OncePerRequestFilter {
             throws ServletException, IOException {
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
 
-        String username = null;
-        String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+        String username, prefix = null, jwt = null;
+        String[] s;
+        if (authorizationHeader != null) {
+            s = authorizationHeader.split(" ");
+            prefix = s[0];
+            jwt = s[1];
+        } else {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.fcmsUserDetailService.loadUserByUsername(username);
-            if (jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        if (prefix.startsWith("Google ") || prefix.startsWith("Facebook ")) {
+            String email, id, link;
 
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            if (prefix.startsWith("Google")) {
+                link = String.format(environment.getProperty("google.link.get.profile"), jwt);
+            } else {
+                link = String.format(environment.getProperty("facebook.link.get.profile"), jwt);
             }
+            String response = Request.Get(link).execute().returnContent().asString();
+            ObjectMapper mapper = new ObjectMapper();
+            email = mapper.readTree(response).get("email").textValue();
+            id = mapper.readTree(response).get("id").textValue();
+            int indexOfAt = email.indexOf("@");
+            username = email.substring(0, indexOfAt + 1) + id;
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.fcmsUserDetailService.loadUserByUsername(username);
+                if (jwtUtil.validateCustomerToken(username, userDetails, indexOfAt)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            }
+            return;
         }
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+
+        if (prefix.startsWith("Bearer ")) {
+            username = jwtUtil.extractUsername(jwt);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.fcmsUserDetailService.loadUserByUsername(username);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            }
+            return;
+        }
     }
 }

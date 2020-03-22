@@ -17,10 +17,10 @@ public class Wallet implements Serializable {
     private Long id;
 
     @Column(name = "balances")
-    private long balances;
+    private float balances;
 
     @Column(name = "in_use_balances")
-    private long inUseBalances;
+    private float inUseBalances;
 
     @Column(name = "is_active")
     private boolean isActive;

@@ -22,4 +22,9 @@ public interface IUserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "SELECT u.password FROM tbl_users u WHERE u.username = :username AND u.is_active = 'TRUE'", nativeQuery = true)
     String getUserPassword(@Param("username") String username);
+
+//    User updateProfile();
+
+//    @Query(value = )
+//    boolean changePassword();
 }

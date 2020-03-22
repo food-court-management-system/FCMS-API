@@ -1,5 +1,6 @@
 package xiaolin.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ public class Cart implements Serializable {
     private Calendar purchaseDate;
 
     @ManyToOne(targetEntity = Customer.class, fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "customer_id")
     private Customer customerOwner;
 }
