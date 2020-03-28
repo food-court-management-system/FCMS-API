@@ -49,6 +49,9 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> loginSocialAccount(@RequestParam("accessToken") String accessToken,
@@ -98,7 +101,7 @@ public class UserController {
     @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestParam("username") String username,
-                                                  @RequestParam("password") String password) throws Exception {
+                                                  @RequestParam("password") String password) {
         String responseMsg;
         if (username.isEmpty()) {
             responseMsg = "Username cannot be null";
@@ -117,6 +120,11 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
 
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, role);

@@ -36,16 +36,13 @@ public class JwtTokenFilters extends OncePerRequestFilter {
 
         String username, prefix = null, jwt = null;
         String[] s;
+
         if (authorizationHeader != null) {
             s = authorizationHeader.split(" ");
             prefix = s[0];
             jwt = s[1];
-        } else {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-            return;
         }
-
-        if (prefix.equals("Google") || prefix.equals("Facebook")) {
+        if ((prefix != null) && (prefix.equals("Google") || prefix.equals("Facebook"))) {
             String email, id, link;
 
             if (prefix.startsWith("Google")) {
@@ -70,8 +67,7 @@ public class JwtTokenFilters extends OncePerRequestFilter {
                 }
             }
         }
-
-        else if (prefix.equals("Bearer")) {
+        else if (prefix != null && prefix.equals("Bearer")) {
             username = jwtUtil.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.fcmsUserDetailService.loadUserByUsername(username);
@@ -84,5 +80,6 @@ public class JwtTokenFilters extends OncePerRequestFilter {
                 }
             }
         }
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
