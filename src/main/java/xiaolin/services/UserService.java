@@ -16,7 +16,7 @@ public class UserService implements IUserService{
 
 
     @Override
-    public User insertUser(User user) {
+    public User saveUser(User user) {
 
 //        String username = "admin";
 //        String password = "123456789";
@@ -56,5 +56,15 @@ public class UserService implements IUserService{
     @Override
     public String getUserRole(String username, String password) {
         return userRepository.getUserRole(username, password);
+    }
+
+    @Override
+    public User getUserInformation(Long userId) {
+        return userRepository.getUserInformation(userId);
+    }
+
+    @Override
+    public User loginWithUsernameAndPwd(String username, String password) {
+        return userRepository.loginWithUsernameAndPwd(username, password);
     }
 }

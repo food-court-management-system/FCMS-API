@@ -6,9 +6,13 @@ import xiaolin.entities.User;
 @Service
 public interface IUserService {
 
-    User insertUser(User user);
+    User saveUser(User user);
 
     User getUserInfo(String username);
 
     String getUserRole(String username, String password);
+
+    User getUserInformation(Long userId);
+
+    User loginWithUsernameAndPwd(String username, String password);
 }
