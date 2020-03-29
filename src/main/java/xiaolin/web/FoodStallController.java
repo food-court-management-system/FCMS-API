@@ -2,9 +2,13 @@ package xiaolin.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import xiaolin.dtos.FoodDto;
+import xiaolin.dtos.FoodStallCreateDTO;
+import xiaolin.dtos.food.FoodStallInfoDTO;
 import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.Food;
 import xiaolin.entities.FoodStall;
@@ -12,11 +16,15 @@ import xiaolin.services.IFoodService;
 import xiaolin.services.IFoodStallService;
 import xiaolin.util.FCMSUtil;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/stall")
+@RequestMapping("/food-stall")
 public class FoodStallController {
 
     @Autowired
@@ -25,16 +33,57 @@ public class FoodStallController {
     @Autowired
     IFoodService foodService;
 
-    @RequestMapping(value = "/food-stalls", method = RequestMethod.GET)
+    @RequestMapping(value = "/lists", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Object> listAllFoodStall() {
-        return new ResponseEntity<>(foodStallService.listAllFoodStall(), HttpStatus.OK);
+    public ResponseEntity<Object> listAllActiveFoodStall() {
+        return new ResponseEntity<>(foodStallService.listAllActiveFoodStall(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Object> searchFoodStall(@RequestParam("name") String foodStallName) {
+    public ResponseEntity<Object> searchFoodStallByName(@RequestParam("name") String foodStallName) {
         return new ResponseEntity<>(foodStallService.searchFoodStallByName(foodStallName), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/filter/top-food-stall", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Object> getTopFoodStall() {
+        List<FoodStallInfoDTO> result = new ArrayList<>();
+//        List<FoodStall> topFoodStall = foodStallService.getTopFoodStallOfFoodCourt();
+        return null;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
+    public ResponseEntity<Object> createNewFoodStallOfFoodCourt(@RequestParam("image") MultipartFile fileImage,
+                                                                @ModelAttribute FoodStallCreateDTO foodStallCreateDTO) {
+        if (fileImage == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        FoodStall foodStall = new FoodStall();
+        foodStall.setFoodStallName(foodStallCreateDTO.getFoodStallName());
+        foodStall.setFoodStallDescription(foodStallCreateDTO.getFoodStallDescription());
+        foodStall.setFoodStallRating(0);
+        foodStall.setActive(true);
+        Long currentTime = new Date().getTime();
+        try {
+            // create new folder tmp for saving image
+            File imageDestination = new File("tmp");
+            // make a name for image (name of food stall_bigint)
+            String fileImageName = foodStallCreateDTO.getFoodStallName() + "_" + currentTime + ".png";
+            if (!imageDestination.exists()) {
+                imageDestination.mkdir();
+            }
+            // get the absolute path of project to saving image
+            String imageAbsolutePath = imageDestination.getAbsolutePath() + "\\" + fileImageName;
+            // image saving file
+            imageDestination = new File(imageAbsolutePath);
+            // transfer data of image to new file image in folder tmp
+            fileImage.transferTo(imageDestination);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/filter/rate", method = RequestMethod.GET)
@@ -49,7 +98,7 @@ public class FoodStallController {
         return new ResponseEntity<>(foodStallService.filterFoodStallByCategory(category), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/food-stalls/{id:\\d+}/detail", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id:\\d+}/detail", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getFoodStallDetail(@PathVariable("id") Long id) {
         if (id == null) {
@@ -75,7 +124,7 @@ public class FoodStallController {
             return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food stall",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         if (dto == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Missing Food", HttpStatus.NOT_ACCEPTABLE), HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Missing food", HttpStatus.NOT_ACCEPTABLE), HttpStatus.NOT_ACCEPTABLE);
         }
         Food food = FCMSMapper.mapToFood(dto);
         return new ResponseEntity<>(foodService.addNewFood(food), HttpStatus.OK);
