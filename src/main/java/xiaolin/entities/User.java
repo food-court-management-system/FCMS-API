@@ -17,10 +17,10 @@ public class User implements Serializable {
     private Long id;
 
     @Column(name = "last_name")
-    private String lName;
+    private String lastName;
 
     @Column(name = "first_name")
-    private String fName;
+    private String firstName;
 
     @Column(name = "age")
     private int age;
