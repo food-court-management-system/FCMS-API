@@ -45,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/stall/search").permitAll()
                 .antMatchers(HttpMethod.GET, "/stall/filter/rate").permitAll()
                 .antMatchers(HttpMethod.GET, "/stall/filter/{tag}").permitAll()
+		.antMatchers(HttpMethod.POST, "/sign-in").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

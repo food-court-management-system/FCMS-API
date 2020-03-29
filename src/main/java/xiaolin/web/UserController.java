@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
+import xiaolin.dtos.LoginFormDto;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.WalletDto;
 import xiaolin.dtos.mapper.FCMSMapper;
@@ -24,7 +25,7 @@ import xiaolin.services.ICustomerService;
 import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
 import xiaolin.util.FCMSUtil;
-
+import java.util.HashMap;
 import javax.xml.ws.Response;
 import java.util.Map;
 
@@ -101,17 +102,17 @@ public class UserController {
 
     @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestParam("username") String username,
-                                                  @RequestParam("password") String password) {
+    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestBody LoginFormDto dto) throws Exception {
         String responseMsg;
-        if (username.isEmpty()) {
-            responseMsg = "Username cannot be null";
-            return new ResponseEntity<>(responseMsg, HttpStatus.NOT_ACCEPTABLE);
-        }
-        if (password.isEmpty()) {
-            responseMsg = "Password cannot be null";
-            return new ResponseEntity<>(responseMsg, HttpStatus.NOT_ACCEPTABLE);
-        }
+        String username = dto.getUsername();
+        String password = dto.getPassword();
+        Map<String, String> response = new HashMap<>();
+//        if (username.isEmpty()) {
+//            responseMsg = "Username cannot be null";
+//        }
+//        if (password.isEmpty()) {
+//            responseMsg = "Password cannot be null";
+//        }
         FCMSUtil fcmsUtil = new FCMSUtil();
         String encodedPwd = fcmsUtil.encodePassword(password);
 
@@ -121,12 +122,6 @@ public class UserController {
             jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
-//        String role = userService.getUserRole(username, encodedPwd);
-//        if (role == null){
-//           JsonObject jsonObject = new JsonObject();
-////            jsonObject.addProperty("message", "Wrong username and password. Please login again");
-////            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
-//        }
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
