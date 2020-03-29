@@ -14,8 +14,8 @@ public class FoodDto {
     private float originPrice;
     private float retailPrice;
     private String foodDescription;
-    private Type foodType;
-    private FoodStall foodStall;
+    private String foodType;
+    private Long foodStallId;
     private String foodImage;
 
     public FoodDto() {}

@@ -13,7 +13,7 @@ public class UserDto {
     private String fName;
     private String lName;
     private int age;
-    private FoodStall foodStall;
+    private Long foodStall;
     private String username;
     private String password;
     private String role;

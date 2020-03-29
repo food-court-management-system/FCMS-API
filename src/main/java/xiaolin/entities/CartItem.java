@@ -16,8 +16,9 @@ public class CartItem implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(name = "food_id")
-    private Long foodId;
+    @JoinColumn(name = "food_id")
+    @ManyToOne(targetEntity = Food.class, fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    private Food foodId;
 
     @Column(name = "quantity")
     private int quantity;

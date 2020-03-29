@@ -16,21 +16,35 @@ public class UserService implements IUserService{
 
 
     @Override
-    public void insertUser() {
-        String username = "admin";
-        String password = "123456789";
-        String role = "admin";
-        boolean isActive = true;
+    public User insertUser(User user) {
 
-        FCMSUtil util = new FCMSUtil();
-        String encodePassword = util.encodePassword(password);
-        UserDto dto = new UserDto();
-        dto.setUsername(username);
-        dto.setPassword(encodePassword);
-        dto.setRole(role);
-        dto.setActive(isActive);
-        User user = FCMSMapper.mapToUser(dto);
-        userRepository.save(user);
+//        String username = "admin";
+//        String password = "123456789";
+//        String role = "admin";
+//        boolean isActive = true;
+//
+//        FCMSUtil util = new FCMSUtil();
+//        String encodePassword = util.encodePassword(password);
+//        UserDto dto = new UserDto();
+//        dto.setUsername(username);
+//        dto.setPassword(encodePassword);
+//        dto.setRole(role);
+//        dto.setActive(isActive);
+//        User user = FCMSMapper.mapToUser(dto);
+////        User user = new User(username, encodePassword, role, isActive);
+//        userRepository.save(user);
+//        user.setUserName("cashier_1");
+//        user.setRole("cashier");
+//        userRepository.save(user);
+//        user.setUserName("cashier_2");
+//        userRepository.save(user);
+//        user.setUserName("food_stall_1");
+//        user.setRole("foodstall");
+//        userRepository.save(user);
+//        user.setUserName("food_stall_2");
+//        userRepository.save(user);
+//        user.setUserName("food_stall_3");
+        return userRepository.save(user);
     }
 
     @Override

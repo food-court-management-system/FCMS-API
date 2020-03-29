@@ -16,10 +16,9 @@ public class FoodStallDto {
     private String foodStallName;
     private String foodStallDescrption;
     private float foodStallRating;
-    private List<User> foodStallOwner;
-    private List<Food> foods;
-    private FoodCourtInformation foodCourt;
-    private Type foodStallType;
+//    private List<User> foodStallOwner;
+//    private List<Food> foods;
+//    private FoodCourtInformation foodCourt;
     private String foodStallImage;
 
     public FoodStallDto() {}

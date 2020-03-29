@@ -11,11 +11,10 @@ import java.time.LocalDate;
 @Setter
 public class RatingDto {
 
-    private Long id;
     private Customer customerRating;
+    private Food foodRated;
     private float ratingStar;
     private LocalDate ratingDate;
-    private Food foodRated;
 
     public RatingDto() { }
 }

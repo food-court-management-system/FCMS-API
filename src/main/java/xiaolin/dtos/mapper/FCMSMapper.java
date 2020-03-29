@@ -20,9 +20,9 @@ public class FCMSMapper {
         if (cartDto.getPurchaseDate() != null) {
             result.setPurchaseDate(cartDto.getPurchaseDate());
         }
-        if (cartDto.getCustomerOwner() != null) {
-            result.setCustomerOwner(cartDto.getCustomerOwner());
-        }
+//        if (cartDto.getCustomerOwner() != null) {
+//            result.setCustomerOwner(cartDto.getCustomerOwner());
+//        }
         return result;
     }
 
@@ -41,9 +41,9 @@ public class FCMSMapper {
         if (cartItemDto.getFoodStatus() != null) {
             result.setFoodStatus(cartItemDto.getFoodStatus());
         }
-        if (cartItemDto.getCartOwner() != null) {
-            result.setCartOwner(cartItemDto.getCartOwner());
-        }
+//        if (cartItemDto.getCartOwner() != null) {
+//            result.setCartOwner(cartItemDto.getCartOwner());
+//        }
         result.setPurchasedPrice(cartItemDto.getPurchasePrice());
         return result;
     }
@@ -63,22 +63,12 @@ public class FCMSMapper {
         if (customerDto.getProvider() != null) {
             result.setProvider(customerDto.getProvider());
         }
-        if (customerDto.getShoppingCart() != null) {
-            result.setShoppingCart(customerDto.getShoppingCart());
-        } else {
-            result.setShoppingCart(new ArrayList<>());
-        }
-        if (customerDto.getRatings() != null) {
-            result.setRatings(customerDto.getRatings());
-        } else {
-            result.setRatings(new ArrayList<>());
-        }
         return result;
     }
 
     public static FoodCourtInformation mapToFoodCourtInformation(FoodCourtInformationDto foodCourtInformationDto){
         FoodCourtInformation result = new FoodCourtInformation();
-        if (foodCourtInformationDto.getFoodCourtId() != 0){
+        if (foodCourtInformationDto.getFoodCourtId() != null){
             result.setFoodCourtId(foodCourtInformationDto.getFoodCourtId());
         }
         if (foodCourtInformationDto.getFoodCourtName() != null) {
@@ -106,12 +96,12 @@ public class FCMSMapper {
             result.setFoodDescription(foodDto.getFoodDescription());
         }
         result.setRetailPrice(foodDto.getRetailPrice());
-        if (foodDto.getFoodType() != null) {
-            result.setFoodType(foodDto.getFoodType());
-        }
-        if (foodDto.getFoodStall() != null) {
-            result.setFoodStall(foodDto.getFoodStall());
-        }
+//        if (foodDto.getFoodType() != null) {
+//            result.setFoodType(foodDto.getFoodType());
+//        }
+//        if (foodDto.getFoodStall() != null) {
+//            result.setFoodStall(foodDto.getFoodStall());
+//        }
         if (foodDto.getFoodImage() != null) {
             result.setFoodImage(foodDto.getFoodImage());
         }
@@ -130,19 +120,6 @@ public class FCMSMapper {
             result.setFoodStallDescription(foodStallDto.getFoodStallDescrption());
         }
         result.setFoodStallRating(foodStallDto.getFoodStallRating());
-        if (foodStallDto.getFoodStallOwner() != null) {
-            result.setFoodStallOwners(foodStallDto.getFoodStallOwner());
-        } else {
-            result.setFoodStallOwners(new ArrayList<>());
-        }
-        if (foodStallDto.getFoods() != null) {
-            result.setFoods(foodStallDto.getFoods());
-        } else {
-            result.setFoods(new ArrayList<>());
-        }
-        if (foodStallDto.getFoodStallType() != null) {
-            result.setFoodStallType(foodStallDto.getFoodStallType());
-        }
         if (foodStallDto.getFoodStallImage() != null) {
             result.setFoodStallImage(foodStallDto.getFoodStallImage());
         }
@@ -172,9 +149,9 @@ public class FCMSMapper {
             result.setLName(userDto.getLName());
         }
         result.setAge(userDto.getAge());
-        if (userDto.getFoodStall() != null) {
-            result.setFoodStall(userDto.getFoodStall());
-        }
+//        if (userDto.getFoodStall() != null) {
+//            result.setFoodStall(userDto.getFoodStall());
+//        }
         if (userDto.getUsername() != null) {
             result.setUserName(userDto.getUsername());
         }
@@ -201,19 +178,23 @@ public class FCMSMapper {
 
     public static Rating mapToRating(RatingDto ratingDto) {
         Rating result = new Rating();
-        if (ratingDto.getId() != null) {
-            result.setId(ratingDto.getId());
-        }
-        if (ratingDto.getCustomerRating() != null) {
-            result.setCustomer(ratingDto.getCustomerRating());
-        }
+//        if (ratingDto.getCustomerRating() != null) {
+//            result.setCustomer(ratingDto.getCustomerRating());
+//        }
         result.setRatingStar(ratingDto.getRatingStar());
         if (ratingDto.getRatingDate() != null) {
             result.setRatingDate(ratingDto.getRatingDate());
         }
-        if (ratingDto.getFoodRated() != null) {
-            result.setFood(ratingDto.getFoodRated());
-        }
+//        if (ratingDto.getFoodRated() != null) {
+//            result.setFood(ratingDto.getFoodRated());
+//        }
+        return result;
+    }
+
+
+    public UserDto mapUserEntityToDto(User user) {
+        UserDto result = null;
+
         return result;
     }
 }

@@ -15,20 +15,18 @@ import java.util.Calendar;
 public class Rating implements Serializable {
 
     @Id
-    @GeneratedValue
-    private Long id;
-
     @JoinColumn(name = "customer_id", nullable = false)
     @ManyToOne(targetEntity = Customer.class)
     private Customer customer;
+
+    @Id
+    @ManyToOne(targetEntity = Food.class)
+    @JoinColumn(name = "food_id", nullable = false)
+    private Food food;
 
     @Column(name = "rating_star")
     private float ratingStar;
 
     @Column(name = "rating_date")
     private LocalDate ratingDate;
-
-    @ManyToOne(targetEntity = Food.class)
-    @JoinColumn(name = "food_id", nullable = false)
-    private Food food;
 }

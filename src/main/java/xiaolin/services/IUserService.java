@@ -6,7 +6,7 @@ import xiaolin.entities.User;
 @Service
 public interface IUserService {
 
-    void insertUser();
+    User insertUser(User user);
 
     User getUserInfo(String username);
 

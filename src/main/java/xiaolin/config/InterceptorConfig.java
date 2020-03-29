@@ -16,12 +16,12 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(new CashierInterceptor())
-                .addPathPatterns("/api/v1/cashier");
+                .addPathPatterns("/cashier");
 
         registry.addInterceptor(new CustomerInterceptor())
-                .addPathPatterns("/api/v1/customer");
+                .addPathPatterns("/customer");
 
         registry.addInterceptor(new FoodStallInterceptor())
-                .addPathPatterns("/api/v1/stall");
+                .addPathPatterns("/stall");
     }
 }
