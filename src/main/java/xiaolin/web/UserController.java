@@ -4,16 +4,16 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
+import xiaolin.dtos.LoginFormDto;
 import xiaolin.entities.User;
 import xiaolin.services.IUserService;
 import xiaolin.util.FCMSUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -43,17 +43,17 @@ public class UserController {
 
     @RequestMapping(value = {"/api/v1/user/login"}, method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestParam("username") String username,
-                                                  @RequestParam("password") String password) throws Exception {
+    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestBody LoginFormDto dto) throws Exception {
         String responseMsg;
-        if (username.isEmpty()) {
-            responseMsg = "Username cannot be null";
-            return new ResponseEntity<>(responseMsg, HttpStatus.NOT_ACCEPTABLE);
-        }
-        if (password.isEmpty()) {
-            responseMsg = "Password cannot be null";
-            return new ResponseEntity<>(responseMsg, HttpStatus.NOT_ACCEPTABLE);
-        }
+        String username = dto.getUsername();
+        String password = dto.getPassword();
+        Map<String, String> response = new HashMap<>();
+//        if (username.isEmpty()) {
+//            responseMsg = "Username cannot be null";
+//        }
+//        if (password.isEmpty()) {
+//            responseMsg = "Password cannot be null";
+//        }
         FCMSUtil fcmsUtil = new FCMSUtil();
         String encodedPwd = fcmsUtil.encodePassword(password);
         String role = userService.getUserRole(username, encodedPwd);
@@ -67,8 +67,12 @@ public class UserController {
         final String jwt  = jwtUtil.generateToken(userDetails, role);
 
         Claims claims = jwtUtil.extractAllClaims(jwt);
+        String r = claims.get("role").toString();
 
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
+        response.put("role", r);
+        response.put("token", jwt);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }
