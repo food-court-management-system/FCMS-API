@@ -1,6 +1,8 @@
 package xiaolin.web;
 
+import com.amazonaws.services.s3.model.Region;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +16,16 @@ import xiaolin.entities.Food;
 import xiaolin.entities.FoodStall;
 import xiaolin.services.IFoodService;
 import xiaolin.services.IFoodStallService;
+import xiaolin.uploader.S3Uploader;
+import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -32,6 +37,15 @@ public class FoodStallController {
 
     @Autowired
     IFoodService foodService;
+
+    @Value("${amazonProperties.accessKey}")
+    private String accessKey;
+    @Value("${amazonProperties.secretKey}")
+    private String secretKey;
+    @Value("${amazonProperties.bucket}")
+    private String bucket;
+
+    private static final String UPLOAD_FOLDER = "temp/";
 
     @RequestMapping(value = "/lists", method = RequestMethod.GET)
     @ResponseBody
@@ -68,18 +82,30 @@ public class FoodStallController {
         Long currentTime = new Date().getTime();
         try {
             // create new folder tmp for saving image
-            File imageDestination = new File("tmp");
+            File folder = new File(UPLOAD_FOLDER);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+
             // make a name for image (name of food stall_bigint)
             String fileImageName = foodStallCreateDTO.getFoodStallName() + "_" + currentTime + ".png";
-            if (!imageDestination.exists()) {
-                imageDestination.mkdir();
-            }
-            // get the absolute path of project to saving image
-            String imageAbsolutePath = imageDestination.getAbsolutePath() + "\\" + fileImageName;
+            Path path = Paths.get(UPLOAD_FOLDER + fileImageName);
             // image saving file
-            imageDestination = new File(imageAbsolutePath);
-            // transfer data of image to new file image in folder tmp
-            fileImage.transferTo(imageDestination);
+            byte[] bytes = fileImage.getBytes();
+            Files.write(path, bytes);
+
+            // upload to S3
+            Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+            String url = uploader.upload(new File(path.toString()));
+            foodStall.setFoodStallImage(url);
+
+            // save food stall
+            
+
+            // clean up
+            folder.listFiles()[0].delete();
+            folder.delete();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

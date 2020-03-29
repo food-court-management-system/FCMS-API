@@ -2,22 +2,18 @@ package xiaolin.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
-import io.jsonwebtoken.Claims;
 import org.apache.http.client.fluent.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.LoginFormDto;
 import xiaolin.dtos.UserDto;
-import xiaolin.dtos.WalletDto;
-import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.Customer;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
@@ -26,7 +22,6 @@ import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
 import xiaolin.util.FCMSUtil;
 import java.util.HashMap;
-import javax.xml.ws.Response;
 import java.util.Map;
 
 @RestController
@@ -50,9 +45,6 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
     @ResponseBody
