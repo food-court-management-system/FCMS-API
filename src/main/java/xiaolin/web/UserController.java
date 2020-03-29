@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.config.jwt.FCMSUserDetailService;
@@ -119,12 +121,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
 
+        //final UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
+
+
+
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (Exception e) {
             e.printStackTrace();
         }
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
+        final String jwt  = jwtUtil.generateToken(userDetails, role);
         Claims claims = jwtUtil.extractAllClaims(jwt);
         String r = claims.get("role").toString();
 
