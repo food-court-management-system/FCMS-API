@@ -5,6 +5,7 @@ import lombok.Setter;
 import xiaolin.entities.Cart;
 import xiaolin.entities.Customer;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 
 @Setter
@@ -12,10 +13,10 @@ import java.util.Calendar;
 public class CartDto {
 
     private Long id;
-    private double totalPrice;
+    private float totalPrice;
     private boolean isCheckOut;
     private Enum<Cart.Status> cartStatus;
-    private Calendar purchaseDate;
+    private LocalDate purchaseDate;
 //    private Customer customerOwner;
 
     public CartDto() { }

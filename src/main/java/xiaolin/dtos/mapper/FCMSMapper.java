@@ -3,8 +3,6 @@ package xiaolin.dtos.mapper;
 import xiaolin.dtos.*;
 import xiaolin.entities.*;
 
-import java.util.ArrayList;
-
 public class FCMSMapper {
 
     public static Cart mapToCart(CartDto cartDto) {
@@ -143,10 +141,10 @@ public class FCMSMapper {
             result.setId(userDto.getUserId());
         }
         if (userDto.getFName() != null) {
-            result.setFName(userDto.getFName());
+            result.setFirstName(userDto.getFName());
         }
         if (userDto.getLName() != null) {
-            result.setLName(userDto.getLName());
+            result.setLastName(userDto.getLName());
         }
         result.setAge(userDto.getAge());
 //        if (userDto.getFoodStall() != null) {

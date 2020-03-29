@@ -21,8 +21,26 @@ public class BootStrapData implements CommandLineRunner {
             user.setPassword(FCMSUtil.encodePassword("admin"));
             user.setRole("admin");
             user.setActive(true);
-            user.setFName("Administrator");
-            userService.insertUser(user);
+            user.setFirstName("Administrator");
+            userService.saveUser(user);
+        }
+        if (userService.getUserInfo("cashier") == null) {
+            User user = new User();
+            user.setUserName("cashier");
+            user.setPassword(FCMSUtil.encodePassword("cashier"));
+            user.setRole("cashier");
+            user.setActive(true);
+            user.setFirstName("Cashier");
+            userService.saveUser(user);
+        }
+        if (userService.getUserInfo("manager") == null) {
+            User user = new User();
+            user.setUserName("manager");
+            user.setPassword(FCMSUtil.encodePassword("manager"));
+            user.setRole("manager");
+            user.setActive(true);
+            user.setFirstName("Food Stall Manager");
+            userService.saveUser(user);
         }
     }
 }

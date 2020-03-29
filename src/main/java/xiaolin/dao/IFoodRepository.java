@@ -8,7 +8,7 @@ import xiaolin.entities.Food;
 @Repository
 public interface IFoodRepository extends JpaRepository<Food, Long> {
 
-//    Food updateFood(@Param("name") String name,
+//    food updateFood(@Param("name") String name,
 //                    @Param("description") String description,
 //                    @Param("image") String image,
 //                    @Param("price") float originPrice,

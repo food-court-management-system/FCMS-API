@@ -33,8 +33,8 @@ public class FoodStall implements Serializable {
 //    @OneToMany(targetEntity = User.class, mappedBy = "foodStall", fetch = FetchType.LAZY)
 //    private List<User> foodStallOwners = new ArrayList<>();
 
-//    @OneToMany(targetEntity = Food.class, mappedBy = "foodStall", fetch = FetchType.EAGER)
-//    private List<Food> foods = new ArrayList<>();
+//    @OneToMany(targetEntity = food.class, mappedBy = "foodStall", fetch = FetchType.EAGER)
+//    private List<food> foods = new ArrayList<>();
 
     @Column(name = "foodStallImage", columnDefinition = "VARCHAR", length = Integer.MAX_VALUE)
     private String foodStallImage;

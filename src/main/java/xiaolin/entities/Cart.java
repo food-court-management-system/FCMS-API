@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Calendar;
 
 @Entity
@@ -18,7 +19,7 @@ public class Cart implements Serializable {
     private long id;
 
     @Column(name = "total_price")
-    private double totalPrice;
+    private float totalPrice;
 
     @Column(name = "is_check_out")
     private boolean isCheckOut;
@@ -29,7 +30,7 @@ public class Cart implements Serializable {
     public enum Status {AVAILABLE, INPROGRESS, PENDING, DONE, FREEZE}
 
     @Column(name = "purchase_date")
-    private Calendar purchaseDate;
+    private LocalDate purchaseDate;
 
     @ManyToOne(targetEntity = Customer.class, fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

@@ -17,7 +17,7 @@ public class FoodStallDto {
     private String foodStallDescrption;
     private float foodStallRating;
 //    private List<User> foodStallOwner;
-//    private List<Food> foods;
+//    private List<food> foods;
 //    private FoodCourtInformation foodCourt;
     private String foodStallImage;
 

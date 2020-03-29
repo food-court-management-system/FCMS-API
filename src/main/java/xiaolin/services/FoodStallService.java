@@ -2,10 +2,14 @@ package xiaolin.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import xiaolin.dao.IFoodStallRepository;
 import xiaolin.dtos.FoodStallDto;
+import xiaolin.dtos.food.FoodStallInfoDTO;
 import xiaolin.entities.FoodStall;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,8 +19,14 @@ public class FoodStallService implements IFoodStallService{
     IFoodStallRepository foodStallRepository;
 
     @Override
-    public List<FoodStall> listAllFoodStall() {
-        return foodStallRepository.findAll();
+    public List<FoodStall> listAllActiveFoodStall() {
+        return foodStallRepository.listAllActiveFoodStall();
+    }
+
+    @Override
+    public List<FoodStall> getTopFoodStallOfFoodCourt() {
+        List<FoodStall> topFoodStallList = foodStallRepository.getTopFoodStallOfFoodCourt();
+        return topFoodStallList;
     }
 
     @Override

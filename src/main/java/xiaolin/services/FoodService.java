@@ -23,7 +23,7 @@ public class FoodService implements IFoodService{
         foodRepository.deleteById(foodId);
     }
 
-//    public Food updateFood(Long foodId) {
+//    public food updateFood(Long foodId) {
 //        foodRepository.updateFood(foodId);
 //    }
 
