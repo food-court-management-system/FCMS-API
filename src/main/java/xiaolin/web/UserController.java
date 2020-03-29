@@ -16,6 +16,7 @@ import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.WalletDto;
+import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.Customer;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
@@ -113,24 +114,34 @@ public class UserController {
         }
         FCMSUtil fcmsUtil = new FCMSUtil();
         String encodedPwd = fcmsUtil.encodePassword(password);
-        String role = userService.getUserRole(username, encodedPwd);
-        if (role == null){
+
+        User user = userService.loginWithUsernameAndPwd(username, encodedPwd);
+        if (user != null) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
-
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String role = userService.getUserRole(username, encodedPwd);
+//        if (role == null){
+//           JsonObject jsonObject = new JsonObject();
+////            jsonObject.addProperty("message", "Wrong username and password. Please login again");
+////            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
+//        }
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
-        String jwt  = jwtUtil.generateToken(userDetails, role);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("token", jwt);
-        return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
+        user.setPassword(null);
+        UserDto result = new UserDto();
+        result.setUserId(user.getId());
+        result.setUsername(user.getUserName());
+        result.setPassword(user.getPassword());
+        result.setFName(user.getFirstName());
+        result.setLName(user.getLastName());
+        result.setAge(user.getAge());
+        result.setRole(user.getRole());
+        result.setActive(true);
+        result.setToken(jwt);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @ResponseBody
