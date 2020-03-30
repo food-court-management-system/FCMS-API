@@ -26,7 +26,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT u FROM tbl_users u WHERE u.id = :id AND u.is_active = 'TRUE'", nativeQuery = true)
     User getUserInformation(@Param("id") Long userId);
 
-    @Query(value = "SELECT u.role FROM tbl_users u WHERE u.username = :username " +
+    @Query(value = "SELECT u.* FROM tbl_users u WHERE u.username = :username " +
                                 "AND u.password = :password " +
                                 "AND u.is_active = 'TRUE'", nativeQuery = true)
     User loginWithUsernameAndPwd(@Param("username") String username,

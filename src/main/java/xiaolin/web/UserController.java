@@ -107,9 +107,9 @@ public class UserController {
 //        }
         FCMSUtil fcmsUtil = new FCMSUtil();
         String encodedPwd = fcmsUtil.encodePassword(password);
-
+        System.out.println("Encoded: " + encodedPwd);
         User user = userService.loginWithUsernameAndPwd(username, encodedPwd);
-        if (user != null) {
+        if (user == null) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
