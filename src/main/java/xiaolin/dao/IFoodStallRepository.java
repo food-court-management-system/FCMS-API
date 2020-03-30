@@ -29,7 +29,7 @@ public interface IFoodStallRepository extends JpaRepository<FoodStall, Long> {
             "ON t.id = f.type_id \n" +
             "RIGHT JOIN tbl_food_stalls fs \n" +
             "ON f.food_stall_id = fs.food_stall_id\n" +
-            "WHERE t.type_name =food AND f.food_stall_id = fs.food_stall_id\n" +
+            "WHERE t.type_name =:category AND f.food_stall_id = fs.food_stall_id\n" +
             "ORDER BY fs.rating ASC", nativeQuery = true)
-    List<FoodStall> filterFoodStallByCategory(String category);
+    List<FoodStall> filterFoodStallByCategory(@Param("category") String category);
 }

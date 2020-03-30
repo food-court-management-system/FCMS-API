@@ -62,6 +62,7 @@ public class FoodStallController {
             foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
             foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
             foodStallDetailDTO.setFoodStallDescription(null);
+            foodStallDetailDTO.setFoodStallRating(foodStall.getFoodStallRating());
             result.add(foodStallDetailDTO);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -69,8 +70,14 @@ public class FoodStallController {
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Object> searchFoodStallByName(@RequestParam("name") String foodStallName) {
-        return new ResponseEntity<>(foodStallService.searchFoodStallByName(foodStallName), HttpStatus.OK);
+    public ResponseEntity<Object> searchFoodStallByName(@RequestParam(value = "name", required = false) String foodStallName) {
+        List<FoodStall> foodStallList;
+        if (foodStallName == null) {
+            foodStallList = foodStallService.listAllActiveFoodStall();
+        } else {
+            foodStallList = foodStallService.searchFoodStallByName(foodStallName);
+        }
+        return new ResponseEntity<>(foodStallList, HttpStatus.OK);
     }
 
     @ResponseBody
