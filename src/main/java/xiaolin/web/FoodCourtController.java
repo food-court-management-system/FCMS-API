@@ -5,15 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import xiaolin.dtos.UserDto;
-import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.dtos.user.UserCreateDTO;
+import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.FoodCourtInformation;
 import xiaolin.entities.User;
 import xiaolin.services.IFoodCourtService;
 import xiaolin.services.IUserService;
 import xiaolin.util.FCMSUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -61,10 +61,17 @@ public class FoodCourtController {
     @ResponseBody
     public ResponseEntity<Object> listAllCashierOfFoodCourt() {
         List<User> cashierList = userService.getAllUserOfFoodCourtBaseOnRole("cashier");
+        List<UserDetailDTO> cashierListResult = new ArrayList<>();
         for (User cashier: cashierList) {
-            cashier.setPassword(null);
+            UserDetailDTO cashierUser = new UserDetailDTO();
+            cashierUser.setUserId(cashier.getId());
+            cashierUser.setFirstName(cashier.getFirstName());
+            cashierUser.setLastName(cashier.getLastName());
+            cashierUser.setAge(cashier.getAge());
+            cashierUser.setUsername(cashier.getUserName());
+            cashierListResult.add(cashierUser);
         }
-        return new ResponseEntity<>(cashierList, HttpStatus.OK);
+        return new ResponseEntity<>(cashierListResult, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/cashier/{id}/delete", method = RequestMethod.PUT)

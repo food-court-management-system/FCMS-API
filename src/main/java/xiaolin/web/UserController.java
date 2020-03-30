@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.config.jwt.FCMSUserDetailService;
@@ -21,8 +20,6 @@ import xiaolin.services.ICustomerService;
 import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
 import xiaolin.util.FCMSUtil;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
