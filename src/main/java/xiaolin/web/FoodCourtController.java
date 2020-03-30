@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import xiaolin.dtos.user.FoodStallManagerDetailDTO;
 import xiaolin.dtos.user.FoodStallUserCreateDTO;
 import xiaolin.dtos.user.UserCreateDTO;
 import xiaolin.dtos.user.UserDetailDTO;
@@ -158,18 +159,23 @@ public class FoodCourtController {
     @RequestMapping(value = "/food-stall-manager/lists", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> listAllFoodStallManager() {
-        List<User> cashierList = userService.getAllUserOfFoodCourtBaseOnRole("fsmanager");
-        List<UserDetailDTO> cashierListResult = new ArrayList<>();
-        for (User cashier: cashierList) {
-            UserDetailDTO cashierUser = new UserDetailDTO();
-            cashierUser.setUserId(cashier.getId());
-            cashierUser.setFirstName(cashier.getFirstName());
-            cashierUser.setLastName(cashier.getLastName());
-            cashierUser.setAge(cashier.getAge());
-            cashierUser.setUsername(cashier.getUserName());
-            cashierListResult.add(cashierUser);
+        List<User> foodStallManagerList = userService.getAllUserOfFoodCourtBaseOnRole("fsmanager");
+        List<FoodStallManagerDetailDTO> foodStallManagerListResult = new ArrayList<>();
+        for (User manager: foodStallManagerList) {
+            FoodStallManagerDetailDTO foodStallManager = new FoodStallManagerDetailDTO();
+            foodStallManager.setId(manager.getId());
+            foodStallManager.setFirstname(manager.getFirstName());
+            foodStallManager.setLastname(manager.getLastName());
+            foodStallManager.setAge(manager.getAge());
+            foodStallManager.setUsername(manager.getUserName());
+            FoodStall foodStallOwner = foodStallService.getFoodStallDetail(manager.getFoodStall().getFoodStallId());
+            if (foodStallOwner != null) {
+                foodStallManager.setFsid(foodStallOwner.getFoodStallId());
+                foodStallManager.setFsname(foodStallOwner.getFoodStallName());
+            }
+            foodStallManagerListResult.add(foodStallManager);
         }
-        return new ResponseEntity<>(cashierListResult, HttpStatus.OK);
+        return new ResponseEntity<>(foodStallManagerListResult, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/food-stall-staff/create", method = RequestMethod.POST)
@@ -206,26 +212,26 @@ public class FoodCourtController {
     @ResponseBody
     public ResponseEntity<Object> listAllFoodStallStaff() {
         List<User> cashierList = userService.getAllUserOfFoodCourtBaseOnRole("fsstaff");
-        List<UserDetailDTO> cashierListResult = new ArrayList<>();
-        for (User cashier: cashierList) {
-            UserDetailDTO cashierUser = new UserDetailDTO();
-            cashierUser.setUserId(cashier.getId());
-            cashierUser.setFirstName(cashier.getFirstName());
-            cashierUser.setLastName(cashier.getLastName());
-            cashierUser.setAge(cashier.getAge());
-            cashierUser.setUsername(cashier.getUserName());
-            cashierListResult.add(cashierUser);
+        List<UserDetailDTO> foodStallStaffListResult = new ArrayList<>();
+        for (User staff: cashierList) {
+            UserDetailDTO foodStallStaff = new UserDetailDTO();
+            foodStallStaff.setUserId(staff.getId());
+            foodStallStaff.setFirstName(staff.getFirstName());
+            foodStallStaff.setLastName(staff.getLastName());
+            foodStallStaff.setAge(staff.getAge());
+            foodStallStaff.setUsername(staff.getUserName());
+            foodStallStaffListResult.add(foodStallStaff);
         }
-        return new ResponseEntity<>(cashierListResult, HttpStatus.OK);
+        return new ResponseEntity<>(foodStallStaffListResult, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/food-stall-staff/{id:\\d+}/delete", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Object> deleteFoodStallStaff(@PathVariable("id") Long foodStallStaffId) {
-        User foodStallManager = userService.getUserInformation(foodStallStaffId);
-        if (foodStallManager != null) {
-            foodStallManager.setActive(false);
-            User result = userService.saveUser(foodStallManager);
+        User foodStallStaff = userService.getUserInformation(foodStallStaffId);
+        if (foodStallStaff != null) {
+            foodStallStaff.setActive(false);
+            User result = userService.saveUser(foodStallStaff);
             if (result != null) {
                 return new ResponseEntity<>(null, HttpStatus.OK);
             } else {

@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 public interface IFoodService {
 
-    Food addNewFood(Food food);
+    Food saveFood(Food food);
 
     void deleteFood(Long foodId);
 

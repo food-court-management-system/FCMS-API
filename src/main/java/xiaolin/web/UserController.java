@@ -16,6 +16,7 @@ import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.LoginFormDto;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.user.ChangePasswordDTO;
+import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
@@ -92,14 +93,12 @@ public class UserController {
         JsonObject jsonObject = new JsonObject();
         User user = userService.getUserInformation(userId);
         if (user != null) {
-            UserDto result = new UserDto();
+            UserDetailDTO result = new UserDetailDTO();
             result.setUserId(user.getId());
             result.setUsername(user.getUserName());
-            result.setPassword(null);
-            result.setFName(user.getFirstName());
-            result.setLName(user.getLastName());
+            result.setFirstName(user.getFirstName());
+            result.setLastName(user.getLastName());
             result.setAge(user.getAge());
-            result.setRole(user.getRole());
 
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {

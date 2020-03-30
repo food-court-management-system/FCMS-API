@@ -14,7 +14,7 @@ public class FoodService implements IFoodService{
     IFoodRepository foodRepository;
 
     @Override
-    public Food addNewFood(Food food) {
+    public Food saveFood(Food food) {
         return foodRepository.save(food);
     }
 
