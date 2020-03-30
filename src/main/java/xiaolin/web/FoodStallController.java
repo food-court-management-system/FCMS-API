@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import xiaolin.dtos.FoodDto;
+import xiaolin.dtos.food.FoodCreateDTO;
 import xiaolin.dtos.foodstall.FoodStallDetailDTO;
-import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.Food;
 import xiaolin.entities.FoodStall;
+import xiaolin.entities.Type;
 import xiaolin.services.IFoodService;
 import xiaolin.services.IFoodStallService;
+import xiaolin.services.ITypeService;
 import xiaolin.uploader.S3Uploader;
 import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +40,9 @@ public class FoodStallController {
     @Autowired
     IFoodService foodService;
 
+    @Autowired
+    ITypeService typeService;
+
     @Value("${amazonProperties.accessKey}")
     private String accessKey;
     @Value("${amazonProperties.secretKey}")
@@ -49,7 +55,16 @@ public class FoodStallController {
     @RequestMapping(value = "/lists", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> listAllActiveFoodStall() {
-        return new ResponseEntity<>(foodStallService.listAllActiveFoodStall(), HttpStatus.OK);
+        List<FoodStall> foodStallList = foodStallService.listAllActiveFoodStall();
+        List<FoodStallDetailDTO> result = new ArrayList<>();
+        for (FoodStall foodStall: foodStallList) {
+            FoodStallDetailDTO foodStallDetailDTO = new FoodStallDetailDTO();
+            foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
+            foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
+            foodStallDetailDTO.setFoodStallDescription(null);
+            result.add(foodStallDetailDTO);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
@@ -189,8 +204,7 @@ public class FoodStallController {
     @RequestMapping(value = "/filter/top-food-stall", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getTopFoodStall() {
-        List<FoodStall> topFoodStall = foodStallService.getTopFoodStallOfFoodCourt();
-        return null;
+        return new ResponseEntity<>(foodStallService.getTopFoodStallOfFoodCourt(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/filter/{tag}", method = RequestMethod.GET)
@@ -215,17 +229,38 @@ public class FoodStallController {
     @RequestMapping(value = "/{id:\\d+}/add/food", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Object> addNewFood(@PathVariable("id") Long foodStallId,
-                        @RequestBody FoodDto[] dto) {
-        // xem lại logic code
-        if (foodStallId == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food stall",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+                                            @RequestBody FoodCreateDTO listFoodDTO) {
+        JsonObject jsonObject = new JsonObject();
+        FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
+        if (foodStall == null) {
+            jsonObject.addProperty("message", "Cannot found that food stall id");
+            return new ResponseEntity<>(jsonObject, HttpStatus.NOT_FOUND);
         }
-        if (dto == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Missing food", HttpStatus.NOT_ACCEPTABLE), HttpStatus.NOT_ACCEPTABLE);
+//        if (listFoodDTO.length == 0 ) {
+//            jsonObject.addProperty("message", "Don't have food to add");
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        }
+        List<Food> listFoodResult = new ArrayList<>();
+//        for(int i = 0; i < listFoodDTO.length; i++) {
+            Food food = new Food();
+            food.setFoodDescription(listFoodDTO.getFoodDescription());
+            food.setFoodName(listFoodDTO.getFoodName());
+            food.setOriginPrice(listFoodDTO.getOriginPrice());
+            food.setRetailPrice(listFoodDTO.getRetailPrice());
+            food.setFoodStall(foodStall);
+            Type foodType = typeService.getTypeBaseOnTypeName(listFoodDTO.getFoodType());
+            food.setFoodType(foodType);
+
+            Food foodResult =foodService.saveFood(food);
+            if (foodResult != null) {
+                listFoodResult.add(foodResult);
+            }
+//        }
+        if (foodResult != null) {
+            return new ResponseEntity<>(foodResult, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-//        Food food = FCMSMapper.mapToFood(dto);
-//        return new ResponseEntity<>(foodService.addNewFood(food), HttpStatus.OK);
-        return null;
     }
 
     @RequestMapping(value = "/{id:\\d+}/food/{food-id}", method = RequestMethod.DELETE)

@@ -11,10 +11,11 @@ import java.util.List;
 @Repository
 public interface IFoodStallRepository extends JpaRepository<FoodStall, Long> {
 
-    @Query(value = "SELECT fs FROM tbl_food_stalls fs WHERE fs.is_active = 'TRUE'", nativeQuery = true)
+    @Query(value = "SELECT fs.* FROM tbl_food_stalls fs WHERE fs.is_active = 'TRUE'", nativeQuery = true)
     List<FoodStall> listAllActiveFoodStall();
 
-    @Query(value = "SELECT * FROM tbl_food_stalls fs ORDER BY fs.rating DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM tbl_food_stalls fs " +
+            "WHERE fs.is_active = 'TRUE' ORDER BY fs.rating DESC", nativeQuery = true)
     List<FoodStall> getTopFoodStallOfFoodCourt();
 
     @Query(value = "SELECT fs FROM FoodStall fs WHERE fs.foodStallName LIKE %:name% ORDER BY fs.foodStallRating ASC")

@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Setter
 public class FoodStallDetailDTO implements Serializable {
 
+    private Long foodStallId;
     private String foodStallName;
     private String foodStallDescription;
 }
