@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public class FoodStallCreateDTO implements Serializable {
+public class FoodStallDetailDTO implements Serializable {
 
     private String foodStallName;
     private String foodStallDescription;

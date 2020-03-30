@@ -1,8 +1,6 @@
 package xiaolin.services;
 
 import org.springframework.stereotype.Service;
-import xiaolin.dtos.FoodStallDto;
-import xiaolin.dtos.food.FoodStallInfoDTO;
 import xiaolin.entities.FoodStall;
 
 import java.util.List;
@@ -12,15 +10,14 @@ public interface IFoodStallService {
 
     List<FoodStall> listAllActiveFoodStall();
 
+    FoodStall saveFoodStallToDB(FoodStall foodStall);
+
     FoodStall getFoodStallDetail(Long id);
 
     List<FoodStall> getTopFoodStallOfFoodCourt();
+    //Lấy all stall, lấy top food, lấy top stall, lấy food theo stall
 
     List<FoodStall> searchFoodStallByName(String name);
 
-    List<FoodStall> filterFoodStallByRating();
-
     List<FoodStall> filterFoodStallByCategory(String category);
-
-    FoodStall editFoodStall(FoodStall foodStall);
 }
