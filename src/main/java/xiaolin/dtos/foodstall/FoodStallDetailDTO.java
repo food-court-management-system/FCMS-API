@@ -1,4 +1,4 @@
-package xiaolin.dtos;
+package xiaolin.dtos.foodstall;
 
 import lombok.Getter;
 import lombok.Setter;

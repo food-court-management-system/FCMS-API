@@ -94,23 +94,22 @@ public class UserController {
 
     @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestBody LoginFormDto dto) throws Exception {
-        String responseMsg;
+    public ResponseEntity<Object> loginWithUsernameAndPwd(@RequestBody LoginFormDto dto) {
+        JsonObject jsonObject = new JsonObject();
+        if (dto.getUsername().length() == 0) {
+            jsonObject.addProperty("message", "Username is null. Please insert username");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonObject.toString());
+        }
+        if (dto.getPassword().length() == 0) {
+            jsonObject.addProperty("message", "Password is null. Please insert password");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonObject.toString());
+        }
         String username = dto.getUsername();
         String password = dto.getPassword();
-        Map<String, String> response = new HashMap<>();
-//        if (username.isEmpty()) {
-//            responseMsg = "Username cannot be null";
-//        }
-//        if (password.isEmpty()) {
-//            responseMsg = "Password cannot be null";
-//        }
         FCMSUtil fcmsUtil = new FCMSUtil();
         String encodedPwd = fcmsUtil.encodePassword(password);
-        System.out.println("Encoded: " + encodedPwd);
         User user = userService.loginWithUsernameAndPwd(username, encodedPwd);
         if (user == null) {
-            JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }

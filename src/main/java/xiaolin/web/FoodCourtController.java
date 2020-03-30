@@ -12,6 +12,9 @@ import xiaolin.entities.FoodCourtInformation;
 import xiaolin.entities.User;
 import xiaolin.services.IFoodCourtService;
 import xiaolin.services.IUserService;
+import xiaolin.util.FCMSUtil;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("food-court")
@@ -35,12 +38,12 @@ public class FoodCourtController {
         User cashier = new User();
         User user = userService.getUserInfo(cashierDTO.getUsername());
         JsonObject jsonObject = new JsonObject();
-        if (user.getId() != 0) {
+        if (user != null) {
             jsonObject.addProperty("message", "This username is existed please use another username");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonObject.toString());
         }
         cashier.setUserName(cashierDTO.getUsername());
-        cashier.setPassword(cashierDTO.getPassword());
+        cashier.setPassword(FCMSUtil.encodePassword(cashierDTO.getPassword()));
         cashier.setFirstName(cashierDTO.getFirstName());
         cashier.setLastName(cashierDTO.getLastName());
         cashier.setAge(cashierDTO.getAge());
@@ -52,6 +55,16 @@ public class FoodCourtController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/cashier/lists", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<Object> listAllCashierOfFoodCourt() {
+        List<User> cashierList = userService.getAllUserOfFoodCourtBaseOnRole("cashier");
+        for (User cashier: cashierList) {
+            cashier.setPassword(null);
+        }
+        return new ResponseEntity<>(cashierList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/cashier/{id}/delete", method = RequestMethod.PUT)

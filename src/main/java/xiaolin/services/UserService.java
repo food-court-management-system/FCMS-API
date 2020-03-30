@@ -8,6 +8,8 @@ import xiaolin.dtos.mapper.FCMSMapper;
 import xiaolin.entities.User;
 import xiaolin.util.FCMSUtil;
 
+import java.util.List;
+
 @Service
 public class UserService implements IUserService{
 
@@ -66,5 +68,10 @@ public class UserService implements IUserService{
     @Override
     public User loginWithUsernameAndPwd(String username, String password) {
         return userRepository.loginWithUsernameAndPwd(username, password);
+    }
+
+    @Override
+    public List<User> getAllUserOfFoodCourtBaseOnRole(String role) {
+        return userRepository.getAllUserOfFoodCourtBaseOnRole(role);
     }
 }
