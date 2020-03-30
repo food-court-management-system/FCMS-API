@@ -20,4 +20,11 @@ public class FoodStallDto {
 
     public FoodStallDto() {}
 
+    public FoodStallDto(Long foodStallId, String foodStallName, String foodStallDescrption, float foodStallRating, String foodStallImage) {
+        this.foodStallId = foodStallId;
+        this.foodStallName = foodStallName;
+        this.foodStallDescrption = foodStallDescrption;
+        this.foodStallRating = foodStallRating;
+        this.foodStallImage = foodStallImage;
+    }
 }
