@@ -5,46 +5,46 @@ import xiaolin.entities.*;
 
 public class FCMSMapper {
 
-    public static Cart mapToCart(CartDto cartDto) {
-        Cart result = new Cart();
-        if (cartDto.getId() != null) {
-            result.setId(cartDto.getId());
-        }
-        result.setTotalPrice(cartDto.getTotalPrice());
-        result.setCheckOut(cartDto.isCheckOut());
-        if (cartDto.getCartStatus() != null) {
-            result.setCartStatus(cartDto.getCartStatus());
-        }
-        if (cartDto.getPurchaseDate() != null) {
-            result.setPurchaseDate(cartDto.getPurchaseDate());
-        }
-//        if (cartDto.getCustomerOwner() != null) {
-//            result.setCustomerOwner(cartDto.getCustomerOwner());
+//    public static Cart mapToCart(CartDto cartDto) {
+//        Cart result = new Cart();
+//        if (cartDto.getId() != null) {
+//            result.setId(cartDto.getId());
 //        }
-        return result;
-    }
-
-    public static CartItem mapToCartItem(CartItemDto cartItemDto) {
-        CartItem result = new CartItem();
-        if (cartItemDto.getId() != null) {
-            result.setId(cartItemDto.getId());
-        }
-        if (cartItemDto.getFoodId() != null) {
-            result.setFoodId(cartItemDto.getFoodId());
-        }
-        result.setQuantity(cartItemDto.getQuantity());
-        if (cartItemDto.getNote() != null) {
-            result.setNote(cartItemDto.getNote());
-        }
-        if (cartItemDto.getFoodStatus() != null) {
-            result.setFoodStatus(cartItemDto.getFoodStatus());
-        }
-//        if (cartItemDto.getCartOwner() != null) {
-//            result.setCartOwner(cartItemDto.getCartOwner());
+//        result.setTotalPrice(cartDto.getTotalPrice());
+//        result.setCheckOut(cartDto.isCheckOut());
+//        if (cartDto.getCartStatus() != null) {
+//            result.setCartStatus(cartDto.getCartStatus());
 //        }
-        result.setPurchasedPrice(cartItemDto.getPurchasePrice());
-        return result;
-    }
+//        if (cartDto.getPurchaseDate() != null) {
+//            result.setPurchaseDate(cartDto.getPurchaseDate());
+//        }
+////        if (cartDto.getCustomerOwner() != null) {
+////            result.setCustomerOwner(cartDto.getCustomerOwner());
+////        }
+//        return result;
+//    }
+//
+//    public static CartItem mapToCartItem(CartItemDto cartItemDto) {
+//        CartItem result = new CartItem();
+//        if (cartItemDto.getId() != null) {
+//            result.setId(cartItemDto.getId());
+//        }
+//        if (cartItemDto.getFoodId() != null) {
+//            result.setFoodId(cartItemDto.getFoodId());
+//        }
+//        result.setQuantity(cartItemDto.getQuantity());
+//        if (cartItemDto.getNote() != null) {
+//            result.setNote(cartItemDto.getNote());
+//        }
+//        if (cartItemDto.getFoodStatus() != null) {
+//            result.setFoodStatus(cartItemDto.getFoodStatus());
+//        }
+////        if (cartItemDto.getCartOwner() != null) {
+////            result.setCartOwner(cartItemDto.getCartOwner());
+////        }
+//        result.setPurchasedPrice(cartItemDto.getPurchasePrice());
+//        return result;
+//    }
 
     public static Customer mapToCustomer(CustomerDto customerDto) {
         Customer result = new Customer();

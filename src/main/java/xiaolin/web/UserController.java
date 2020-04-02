@@ -78,8 +78,6 @@ public class UserController {
                     cus.setEmail(email);
                     customerService.createNewCustomer(cus);
                 }
-            } else {
-                return new ResponseEntity<>(HttpStatus.OK);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -131,7 +129,6 @@ public class UserController {
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
-        user.setPassword(null);
         UserDto result = new UserDto();
         result.setUserId(user.getId());
         result.setUsername(user.getUserName());
