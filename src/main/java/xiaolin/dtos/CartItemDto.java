@@ -2,23 +2,18 @@ package xiaolin.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import xiaolin.entities.Cart;
-import xiaolin.entities.CartItem;
-import xiaolin.entities.Food;
 
 @Getter
 @Setter
-public class CartItemDto {
+public class CartItemDto implements Comparable<CartItemDto> {
 
-    private Long id;
-    private Food foodId;
+    private Long foodId;
     private int quantity;
     private String note;
-    private Enum<CartItem.FoodStatus> foodStatus;
-//    private Cart cartOwner;
-    private float purchasePrice;
 
-    public CartItemDto() {}
-
-
+    @Override
+    public int compareTo(CartItemDto cartItemDto) {
+        return (foodId < cartItemDto.getFoodId() ? -1 :
+                (foodId == cartItemDto.getFoodId() ? 0 : 1));
+    }
 }

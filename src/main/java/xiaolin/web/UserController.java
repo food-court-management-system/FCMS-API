@@ -74,8 +74,6 @@ public class UserController {
                     cus.setEmail(email);
                     customerService.createNewCustomer(cus);
                 }
-            } else {
-                return new ResponseEntity<>(HttpStatus.OK);
             }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -113,11 +111,10 @@ public class UserController {
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
-        user.setPassword(null);
         UserDto result = new UserDto();
         result.setUserId(user.getId());
         result.setUsername(user.getUserName());
-        result.setPassword(user.getPassword());
+        result.setPassword(null);
         result.setFName(user.getFirstName());
         result.setLName(user.getLastName());
         result.setAge(user.getAge());
@@ -125,12 +122,6 @@ public class UserController {
         result.setActive(true);
         result.setToken(jwt);
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/sad", method = RequestMethod.GET)
-    public String testAccessToken() {
-        return "This is access token works";
     }
 
 }

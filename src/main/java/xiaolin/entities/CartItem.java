@@ -1,5 +1,6 @@
 package xiaolin.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +18,8 @@ public class CartItem implements Serializable {
     private Long id;
 
     @JoinColumn(name = "food_id")
-    @ManyToOne(targetEntity = Food.class, fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne
+    @JsonIgnore
     private Food foodId;
 
     @Column(name = "quantity")
@@ -26,15 +28,14 @@ public class CartItem implements Serializable {
     @Column(name = "note", length = Integer.MAX_VALUE)
     private String note;
 
-    @Column(name = "food_status", columnDefinition = "VARCHAR(50)")
-    private Enum<FoodStatus> foodStatus;
-
-    @ManyToOne(targetEntity = Cart.class, fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "cart_id")
-    private Cart cartOwner;
+    @Enumerated(EnumType.STRING)
+    private FoodStatus foodStatus;
 
     @Column(name = "purchased_price")
     private float purchasedPrice;
 
-    public enum FoodStatus{DONE, INPROGRESS, QUEUE, DELIVERY, FINISH}
+    @JoinColumn(name = "cart_id")
+    @ManyToOne
+    @JsonIgnore
+    private Cart cart;
 }

@@ -12,6 +12,5 @@ import java.util.List;
 @Repository
 public interface ICartRepository extends JpaRepository<Cart, Long> {
 
-    @Query(value = "SELECT * FROM tbl_shopping_carts c WHERE c.customer_id = :customerId", nativeQuery = true)
-    List<Cart> getHistoryOrder(@Param("customerId") Long id);
+    List<Cart> getAllByWallet_Id(Long walletId);
 }

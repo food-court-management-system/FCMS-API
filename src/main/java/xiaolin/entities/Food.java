@@ -33,9 +33,8 @@ public class Food implements Serializable {
     @JoinColumn(name = "type_id")
     private Type foodType;
 
-    @ManyToOne(targetEntity = FoodStall.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = FoodStall.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "food_stall_id")
-//    @Column(name = "food_stall_id")
     private FoodStall foodStall;
 
     @Column(name = "foodImage", columnDefinition = "VARCHAR", length = 1000)

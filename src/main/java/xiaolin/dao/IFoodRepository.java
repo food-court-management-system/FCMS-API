@@ -5,8 +5,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import xiaolin.entities.Food;
 
+import java.util.List;
+
 @Repository
 public interface IFoodRepository extends JpaRepository<Food, Long> {
+    List<Food> findByIdIn(List<Long> ids);
 
 //    food updateFood(@Param("name") String name,
 //                    @Param("description") String description,
