@@ -6,5 +6,9 @@ import xiaolin.entities.Wallet;
 @Service
 public interface IWalletService {
 
-    Wallet createWalletForNewCustomer(Wallet wallet);
+    Wallet saveWallet(Wallet wallet);
+
+    Wallet getCustomerWalletByWalletId(Long walletId, Boolean status);
+
+    Wallet searchCustomerWalletByCustomerId(Long customerId);
 }

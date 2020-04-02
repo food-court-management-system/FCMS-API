@@ -3,14 +3,12 @@ package xiaolin.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.spring.web.json.Json;
 import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.LoginFormDto;
@@ -69,7 +67,7 @@ public class UserController {
                 newWallet.setActive(true);
                 newWallet.setInUseBalances(0);
                 newWallet.setBalances(0);
-                Wallet wallet = walletService.createWalletForNewCustomer(newWallet);
+                Wallet wallet = walletService.saveWallet(newWallet);
                 if (wallet != null) {
                     cus = new Customer();
                     cus.setWallet(newWallet);

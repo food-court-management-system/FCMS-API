@@ -10,6 +10,9 @@ import xiaolin.entities.Wallet;
 @Repository
 public interface IWalletRepository extends JpaRepository<Wallet, Long> {
     @Query(value = "SELECT w.* FROM tbl_wallets w, tbl_customers c WHERE w.id = c.wallet_id AND c.id = :cus_id", nativeQuery = true)
-    public Wallet findWalletByCustomerId(@Param("cus_id") Long id);
+    Wallet findWalletByCustomerId(@Param("cus_id") Long customerId);
 
+    @Query(value = "SELECT w.* FROM tbl_wallets w WHERE w.id = :wallet_id AND w.is_active = :status", nativeQuery = true)
+    Wallet getCustomerWallet(@Param("wallet_id") Long walletId,
+                             @Param("status") Boolean walletStatus);
 }

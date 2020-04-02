@@ -12,12 +12,17 @@ public class WalletService implements IWalletService{
     IWalletRepository walletRepository;
 
     @Override
-    public Wallet createWalletForNewCustomer(Wallet wallet) {
-        Wallet w = walletRepository.save(wallet);
-        System.out.println(w.getBalances());
-        System.out.println(w.getId());
-        System.out.println(w.isActive());
-        System.out.println(w.getInUseBalances());
-        return w;
+    public Wallet saveWallet(Wallet wallet) {
+        return walletRepository.save(wallet);
+    }
+
+    @Override
+    public Wallet getCustomerWalletByWalletId(Long walletId, Boolean status) {
+        return walletRepository.getCustomerWallet(walletId, status);
+    }
+
+    @Override
+    public Wallet searchCustomerWalletByCustomerId(Long customerId) {
+        return walletRepository.findWalletByCustomerId(customerId);
     }
 }
