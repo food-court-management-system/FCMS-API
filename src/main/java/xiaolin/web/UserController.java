@@ -3,16 +3,20 @@ package xiaolin.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.spring.web.json.Json;
 import xiaolin.config.jwt.FCMSUserDetailService;
 import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.LoginFormDto;
 import xiaolin.dtos.UserDto;
+import xiaolin.dtos.user.ChangePasswordDTO;
+import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
@@ -81,10 +85,24 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"/detail"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/{id:\\d+}/detail"}, method = RequestMethod.GET)
     @ResponseBody
-    public User getUserDetail(@RequestParam("username") String username){
-        return userService.getUserInfo(username);
+    public ResponseEntity<Object> getUserDetail(@PathVariable("id") Long userId){
+        JsonObject jsonObject = new JsonObject();
+        User user = userService.getUserInformation(userId);
+        if (user != null) {
+            UserDetailDTO result = new UserDetailDTO();
+            result.setUserId(user.getId());
+            result.setUsername(user.getUserName());
+            result.setFirstName(user.getFirstName());
+            result.setLastName(user.getLastName());
+            result.setAge(user.getAge());
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            jsonObject.addProperty("message", "Cannot found that user with that id");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @RequestMapping(value = {"/login"}, method = RequestMethod.POST)
@@ -122,6 +140,40 @@ public class UserController {
         result.setActive(true);
         result.setToken(jwt);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id:\\d+}/change-password", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseEntity<Object> changeUserPassword(@PathVariable("id") Long userId,
+                                                     @RequestBody ChangePasswordDTO changePasswordDTO) {
+        User user = userService.getUserInformation(userId);
+        JsonObject jsonObject = new JsonObject();
+        if (changePasswordDTO.getNewPassword() == null) {
+            jsonObject.addProperty("message", "Must have new password for changing");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (changePasswordDTO.getOldPassword() == null) {
+            jsonObject.addProperty("message", "Must have new password for changing");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (user != null) {
+            String encodedOldPwd = FCMSUtil.encodePassword(changePasswordDTO.getOldPassword());
+            if (!user.getPassword().equals(encodedOldPwd)) {
+                jsonObject.addProperty("message", "Old password is not match please check again");
+                return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+            }
+            user.setPassword(FCMSUtil.encodePassword(changePasswordDTO.getNewPassword()));
+            userService.saveUser(user);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/sad", method = RequestMethod.GET)
+    public String testAccessToken() {
+        return "This is access token works";
     }
 
 }

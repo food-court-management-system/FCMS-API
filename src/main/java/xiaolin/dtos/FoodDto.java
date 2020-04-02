@@ -14,6 +14,7 @@ public class FoodDto {
     private float originPrice;
     private float retailPrice;
     private String foodDescription;
+    private String foodName;
     private String foodType;
     private Long foodStallId;
     private String foodImage;
