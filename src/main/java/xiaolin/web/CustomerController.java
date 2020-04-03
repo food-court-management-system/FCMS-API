@@ -5,9 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import xiaolin.dtos.CustomerDto;
+import xiaolin.entities.Customer;
 import xiaolin.entities.Wallet;
 import xiaolin.services.ICustomerService;
 import xiaolin.services.IWalletService;
+
+import java.util.ArrayList;
+import java.util.List;
 //import xiaolin.services.IRatingService;
 
 @RestController
@@ -115,6 +120,74 @@ public class CustomerController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/google/lists", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllCustomerHasProviderGoogle() {
+        List<Customer> googleCustomer = customerService.getAllCustomerBaseOnProvider("Google");
+        List<CustomerDto> result = new ArrayList<>();
+        if (googleCustomer != null) {
+            for(Customer customer : googleCustomer) {
+                CustomerDto customerDto = new CustomerDto();
+                customerDto.setId(customer.getId());
+                customerDto.setActive(customer.isActive());
+                customerDto.setEmail(customer.getEmail());
+                customerDto.setProvider(customer.getProvider());
+                customerDto.setWalletId(customer.getWallet().getId());
+                result.add(customerDto);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/facebook/lists", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllCustomerHasProviderFacebook() {
+        List<Customer> facebookCustomer = customerService.getAllCustomerBaseOnProvider("Facebook");
+        List<CustomerDto> result = new ArrayList<>();
+        if (facebookCustomer != null) {
+            for(Customer customer : facebookCustomer) {
+                CustomerDto customerDto = new CustomerDto();
+                customerDto.setId(customer.getId());
+                customerDto.setActive(customer.isActive());
+                customerDto.setEmail(customer.getEmail());
+                customerDto.setProvider(customer.getProvider());
+                customerDto.setWalletId(customer.getWallet().getId());
+                result.add(customerDto);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/lists/all", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllCustomerAccountInFoodCourt(){
+        List<Customer> googleCustomer = customerService.getAllCustomerBaseOnProvider("Google");
+        List<Customer> facebookCustomer = customerService.getAllCustomerBaseOnProvider("Facebook");
+        List<CustomerDto> result = new ArrayList<>();
+        if (facebookCustomer != null) {
+            for(Customer customer : facebookCustomer) {
+                CustomerDto customerDto = new CustomerDto();
+                customerDto.setId(customer.getId());
+                customerDto.setActive(customer.isActive());
+                customerDto.setEmail(customer.getEmail());
+                customerDto.setProvider(customer.getProvider());
+                customerDto.setWalletId(customer.getWallet().getId());
+                result.add(customerDto);
+            }
+        }
+        if (googleCustomer != null) {
+            for(Customer customer : googleCustomer) {
+                CustomerDto customerDto = new CustomerDto();
+                customerDto.setId(customer.getId());
+                customerDto.setActive(customer.isActive());
+                customerDto.setEmail(customer.getEmail());
+                customerDto.setProvider(customer.getProvider());
+                customerDto.setWalletId(customer.getWallet().getId());
+                result.add(customerDto);
+            }
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 //    @Autowired
 //    IRatingService ratingService;
 

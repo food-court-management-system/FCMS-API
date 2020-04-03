@@ -1,10 +1,16 @@
 package xiaolin.web;
 
+import com.amazonaws.services.s3.model.Region;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.spring.web.json.Json;
+import xiaolin.dtos.foodcourt.FoodCourtDetailDTO;
 import xiaolin.dtos.user.FoodStallManagerDetailDTO;
 import xiaolin.dtos.user.FoodStallUserCreateDTO;
 import xiaolin.dtos.user.UserCreateDTO;
@@ -17,9 +23,16 @@ import xiaolin.services.IFoodCourtService;
 import xiaolin.services.IFoodStallService;
 import xiaolin.services.ITypeService;
 import xiaolin.services.IUserService;
+import xiaolin.uploader.S3Uploader;
+import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,6 +50,15 @@ public class FoodCourtController {
 
     @Autowired
     IFoodStallService foodStallService;
+
+    @Value("${amazonProperties.accessKey}")
+    private String accessKey;
+    @Value("${amazonProperties.secretKey}")
+    private String secretKey;
+    @Value("${amazonProperties.bucket}")
+    private String bucket;
+
+    private static final String UPLOAD_FOLDER = "temp/";
 
     @RequestMapping(value = "/about", method = RequestMethod.GET)
     @ResponseBody
@@ -103,10 +125,64 @@ public class FoodCourtController {
         }
     }
 
-    @RequestMapping(value = "/information", method = RequestMethod.POST)
+    @RequestMapping(value = "/information", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
     @ResponseBody
-    public FoodCourtInformation createFoodCourtInformation(@RequestBody FoodCourtInformation foodCourtInformation) {
-        return foodCourtService.saveFoodCourtInformation(foodCourtInformation);
+    public ResponseEntity<Object> createFoodCourtInformation(@RequestParam("image") MultipartFile foodCourtImage,
+                                                             @ModelAttribute FoodCourtDetailDTO foodCourtDetailDTO) {
+        JsonObject jsonObject = new JsonObject();
+        if (foodCourtImage == null) {
+            jsonObject.addProperty("message", "Food court image cannot be null");
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+        }
+        if (foodCourtDetailDTO.getFoodCourtName() == null) {
+            jsonObject.addProperty("message", "Food court name cannot be null");
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+        }
+        if (foodCourtDetailDTO.getFoodCourtAddress() == null) {
+            jsonObject.addProperty("message", "Food court address cannot be null");
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+        }
+        if (foodCourtDetailDTO.getFoodCourtDescription() == null) {
+            jsonObject.addProperty("message", "Food court description cannot be null");
+            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+        }
+        Long currentTime = new Date().getTime();
+        FoodCourtInformation foodCourtInformation = new FoodCourtInformation();
+        foodCourtInformation.setFoodCourtName(foodCourtDetailDTO.getFoodCourtName());
+        foodCourtInformation.setFoodCourtDescription(foodCourtDetailDTO.getFoodCourtDescription());
+        foodCourtInformation.setFoodCourtAddress(foodCourtDetailDTO.getFoodCourtAddress());
+        try {
+            // create new folder tmp for saving image
+            File folder = new File(UPLOAD_FOLDER);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+
+            // make a name for image (name of food stall_bigint)
+            String fileImageName = foodCourtDetailDTO.getFoodCourtName() + "_" + currentTime + ".png";
+            Path path = Paths.get(UPLOAD_FOLDER + fileImageName);
+            // image saving file
+            byte[] bytes = foodCourtImage.getBytes();
+            Files.write(path, bytes);
+
+            // upload to S3
+            Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+            String url = uploader.upload(new File(path.toString()));
+            foodCourtInformation.setFoodCourtImage(url);
+
+            // clean up
+            folder.listFiles()[0].delete();
+            folder.delete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FoodCourtInformation result = foodCourtService.saveFoodCourtInformation(foodCourtInformation);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ResponseBody
@@ -258,5 +334,11 @@ public class FoodCourtController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/type/lists", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllTypeInFoodCourt() {
+        return new ResponseEntity<>(typeService.getAllTypeInFoodCourt(), HttpStatus.OK);
     }
 }

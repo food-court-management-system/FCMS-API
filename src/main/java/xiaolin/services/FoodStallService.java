@@ -25,8 +25,7 @@ public class FoodStallService implements IFoodStallService{
 
     @Override
     public List<FoodStall> getTopFoodStallOfFoodCourt() {
-        List<FoodStall> topFoodStallList = foodStallRepository.getTopFoodStallOfFoodCourt();
-        return topFoodStallList;
+        return foodStallRepository.getTopFoodStallOfFoodCourt();
     }
 
     @Override

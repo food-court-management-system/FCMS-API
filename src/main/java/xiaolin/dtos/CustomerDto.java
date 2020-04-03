@@ -15,7 +15,7 @@ import java.util.List;
 public class CustomerDto {
 
     private Long id;
-    private Wallet wallet;
+    private Long walletId;
     private String email;
     private boolean isActive;
     private String provider;

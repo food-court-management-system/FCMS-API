@@ -62,6 +62,7 @@ public class FoodStallController {
             foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
             foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
             foodStallDetailDTO.setFoodStallDescription(null);
+            foodStallDetailDTO.setFoodStallImage(foodStall.getFoodStallImage());
             foodStallDetailDTO.setFoodStallRating(foodStall.getFoodStallRating());
             result.add(foodStallDetailDTO);
         }
@@ -148,10 +149,10 @@ public class FoodStallController {
             jsonObject.addProperty("message", "Cannot find food stall with that id");
             return new ResponseEntity<>(jsonObject, HttpStatus.NOT_FOUND);
         }
-        if (foodStallDetailDTO.getFoodStallName().length() != 0) {
+        if (foodStallDetailDTO.getFoodStallName() != null) {
             foodStall.setFoodStallName(foodStallDetailDTO.getFoodStallName());
         }
-        if (foodStallDetailDTO.getFoodStallDescription().length() != 0) {
+        if (foodStallDetailDTO.getFoodStallDescription() != null) {
             foodStall.setFoodStallDescription(foodStallDetailDTO.getFoodStallDescription());
         }
         Long currentTime = new Date().getTime();
@@ -211,7 +212,18 @@ public class FoodStallController {
     @RequestMapping(value = "/filter/top-food-stall", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getTopFoodStall() {
-        return new ResponseEntity<>(foodStallService.getTopFoodStallOfFoodCourt(), HttpStatus.OK);
+        List<FoodStall> topFoodStallList = foodStallService.getTopFoodStallOfFoodCourt();
+        List<FoodStallDetailDTO> result = new ArrayList<>();
+        for (FoodStall foodStall: topFoodStallList) {
+            FoodStallDetailDTO foodStallDetailDTO = new FoodStallDetailDTO();
+            foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
+            foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
+            foodStallDetailDTO.setFoodStallDescription(null);
+            foodStallDetailDTO.setFoodStallImage(foodStall.getFoodStallImage());
+            foodStallDetailDTO.setFoodStallRating(foodStall.getFoodStallRating());
+            result.add(foodStallDetailDTO);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/filter/{tag}", method = RequestMethod.GET)
@@ -225,10 +237,9 @@ public class FoodStallController {
     public ResponseEntity<Object> getFoodStallDetail(@PathVariable("id") Long id) {
         FoodStall result = foodStallService.getFoodStallDetail(id);
         if (result == null) {
-            System.out.println("Null result");
-            return new ResponseEntity<>(
-                    FCMSUtil.returnErrorMsg("Cannot found food stall", HttpStatus.NOT_FOUND),
-                    HttpStatus.NOT_FOUND);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", "Cannot found that food stall");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
