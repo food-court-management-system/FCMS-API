@@ -228,4 +228,27 @@ public class CustomerController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/{id:\\d+}/edit", method = RequestMethod.PUT)
+    public ResponseEntity<Object> activeOrDeactiveCustomer(@PathVariable("id") Long customerId,
+                                                           @RequestParam("status") Boolean status) {
+        JsonObject jsonObject = new JsonObject();
+        if (status == null) {
+            jsonObject.addProperty("message", "Missing parameter status");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        Customer customer = customerService.checkCustomerActiveOrDeactive(customerId, status);
+        if (status.booleanValue()) {
+            customer.setActive(false);
+        } else {
+            customer.setActive(true);
+        }
+        Customer result = customerService.createNewCustomer(customer);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

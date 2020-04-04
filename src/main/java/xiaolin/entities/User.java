@@ -25,7 +25,7 @@ public class User implements Serializable {
     @Column(name = "age")
     private int age;
 
-    @ManyToOne(targetEntity = FoodStall.class,fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @ManyToOne(targetEntity = FoodStall.class,fetch = FetchType.LAZY)
     @JoinColumn(name = "food_stall_id")
     private FoodStall foodStall;
 

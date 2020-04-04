@@ -38,4 +38,9 @@ public class CustomerService implements ICustomerService{
     public Customer getCustomerById(Long customerId) {
         return customerRepository.getCustomerDetailById(customerId);
     }
+
+    @Override
+    public Customer checkCustomerActiveOrDeactive(Long customerId, Boolean status) {
+        return customerRepository.checkCustomerActiveOrDeactive(customerId, status);
+    }
 }

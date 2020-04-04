@@ -33,7 +33,7 @@ public class Food implements Serializable {
     @JoinColumn(name = "type_id")
     private Type foodType;
 
-    @ManyToOne(targetEntity = FoodStall.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = FoodStall.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "food_stall_id")
     private FoodStall foodStall;
 

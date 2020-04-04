@@ -31,7 +31,7 @@ public class Cart implements Serializable {
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
 
-    @OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private List<CartItem> cartItems = new ArrayList<>();
 

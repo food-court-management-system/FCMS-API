@@ -15,4 +15,6 @@ public interface ICustomerService {
     List<Customer> getAllCustomerBaseOnProvider(String provider);
 
     Customer getCustomerById(Long customerId);
+
+    Customer checkCustomerActiveOrDeactive(Long customerId, Boolean status);
 }

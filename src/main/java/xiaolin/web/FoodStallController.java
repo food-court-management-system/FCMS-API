@@ -60,6 +60,7 @@ public class FoodStallController {
         for (FoodStall foodStall: foodStallList) {
             FoodStallDetailDTO foodStallDetailDTO = new FoodStallDetailDTO();
             foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
+            foodStallDetailDTO.setFoodStallImage(foodStall.getFoodStallImage());
             foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
             foodStallDetailDTO.setFoodStallDescription(null);
             foodStallDetailDTO.setFoodStallRating(foodStall.getFoodStallRating());
@@ -211,7 +212,18 @@ public class FoodStallController {
     @RequestMapping(value = "/filter/top-food-stall", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<Object> getTopFoodStall() {
-        return new ResponseEntity<>(foodStallService.getTopFoodStallOfFoodCourt(), HttpStatus.OK);
+        List<FoodStall> foodStallList = foodStallService.listAllActiveFoodStall();
+        List<FoodStallDetailDTO> result = new ArrayList<>();
+        for (FoodStall foodStall: foodStallList) {
+            FoodStallDetailDTO foodStallDetailDTO = new FoodStallDetailDTO();
+            foodStallDetailDTO.setFoodStallName(foodStall.getFoodStallName());
+            foodStallDetailDTO.setFoodStallImage(foodStall.getFoodStallImage());
+            foodStallDetailDTO.setFoodStallId(foodStall.getFoodStallId());
+            foodStallDetailDTO.setFoodStallDescription(null);
+            foodStallDetailDTO.setFoodStallRating(foodStall.getFoodStallRating());
+            result.add(foodStallDetailDTO);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/filter/{tag}", method = RequestMethod.GET)
