@@ -9,8 +9,8 @@ import java.io.Serializable;
 @Getter
 public class FoodCreateDTO implements Serializable {
 
-    private float originPrice;
-    private float retailPrice;
+    private Float originPrice;
+    private Float retailPrice;
     private String foodDescription;
     private String foodName;
     private String foodType;

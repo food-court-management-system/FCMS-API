@@ -37,8 +37,14 @@ public class Food implements Serializable {
     @JoinColumn(name = "food_stall_id")
     private FoodStall foodStall;
 
+    @Column(name = "food_rating")
+    private float foodRating;
+
     @Column(name = "foodImage", columnDefinition = "VARCHAR", length = 1000)
     private String foodImage;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 
 //    @OneToMany(targetEntity = Rating.class, mappedBy = "food")
 //    private List<Rating> rating;

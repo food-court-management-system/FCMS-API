@@ -33,4 +33,9 @@ public class CustomerService implements ICustomerService{
     public List<Customer> getAllCustomerBaseOnProvider(String provider) {
         return customerRepository.getAllCustomerBaseOnProvider(provider);
     }
+
+    @Override
+    public Customer getCustomerById(Long customerId) {
+        return customerRepository.getCustomerDetailById(customerId);
+    }
 }

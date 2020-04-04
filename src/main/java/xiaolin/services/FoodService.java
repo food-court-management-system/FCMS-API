@@ -19,16 +19,22 @@ public class FoodService implements IFoodService{
     }
 
     @Override
-    public void deleteFood(Long foodId) {
-        foodRepository.deleteById(foodId);
-    }
-
-//    public food updateFood(Long foodId) {
-//        foodRepository.updateFood(foodId);
-//    }
-
-    @Override
     public List<Food> getAllFood() {
         return foodRepository.findAll();
+    }
+
+    @Override
+    public Food getFoodDetailById(Long foodId) {
+        return foodRepository.getFoodDetailById(foodId);
+    }
+
+    @Override
+    public List<Food> getTopFoodOfFoodCourt() {
+        return foodRepository.getAllTopFoodInFoodCourt();
+    }
+
+    @Override
+    public List<Food> getFoodStallMenu(Long foodStallId) {
+        return foodRepository.getFoodStallMenu(foodStallId);
     }
 }

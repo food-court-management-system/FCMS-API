@@ -88,15 +88,15 @@ public class FoodStallController {
         JsonObject jsonObject = new JsonObject();
         if (fileImage == null) {
             jsonObject.addProperty("message", "Food stall image must have in your food stall");
-            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
         if (foodStallDetailDTO.getFoodStallName().length() == 0) {
             jsonObject.addProperty("message", "Food stall name must have in your food stall");
-            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
         if (foodStallDetailDTO.getFoodStallDescription().length() == 0) {
             jsonObject.addProperty("message", "Food stall description must have in your food stall");
-            return new ResponseEntity<>(jsonObject, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
         FoodStall foodStall = new FoodStall();
         foodStall.setFoodStallDescription(foodStallDetailDTO.getFoodStallDescription());
@@ -147,7 +147,7 @@ public class FoodStallController {
         FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
         if (foodStall == null) {
             jsonObject.addProperty("message", "Cannot find food stall with that id");
-            return new ResponseEntity<>(jsonObject, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
         if (foodStallDetailDTO.getFoodStallName() != null) {
             foodStall.setFoodStallName(foodStallDetailDTO.getFoodStallName());
@@ -198,7 +198,7 @@ public class FoodStallController {
         FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
         if (foodStall == null) {
             jsonObject.addProperty("message", "Cannot find food stall with that id");
-            return new ResponseEntity<>(jsonObject, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
         foodStall.setActive(false);
         FoodStall result = foodStallService.saveFoodStallToDB(foodStall);
@@ -244,39 +244,84 @@ public class FoodStallController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id:\\d+}/add/food", method = RequestMethod.POST)
+    @ResponseBody
+    @RequestMapping(value = "/{id:\\d+}/detail/menu", method = RequestMethod.GET)
+    public ResponseEntity<Object> getFoodStallMenu(@PathVariable("id") Long foodStallId){
+        return new ResponseEntity<>(foodService.getFoodStallMenu(foodStallId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id:\\d+}/add/food", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
     @ResponseBody
     public ResponseEntity<Object> addNewFood(@PathVariable("id") Long foodStallId,
-                                            @RequestBody FoodCreateDTO listFoodDTO) {
+                                             @RequestParam("image") MultipartFile foodCourtImage,
+                                             @ModelAttribute FoodCreateDTO foodDTO) {
         JsonObject jsonObject = new JsonObject();
         FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
         if (foodStall == null) {
             jsonObject.addProperty("message", "Cannot found that food stall id");
-            return new ResponseEntity<>(jsonObject, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
-//        if (listFoodDTO.length == 0 ) {
-//            jsonObject.addProperty("message", "Don't have food to add");
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
-        List<Food> listFoodResult = new ArrayList<>();
-//        for(int i = 0; i < listFoodDTO.length; i++) {
-            Food food = new Food();
-            food.setFoodDescription(listFoodDTO.getFoodDescription());
-            food.setFoodName(listFoodDTO.getFoodName());
-            food.setOriginPrice(listFoodDTO.getOriginPrice());
-            food.setRetailPrice(listFoodDTO.getRetailPrice());
-            food.setFoodStall(foodStall);
-            Type foodType = typeService.getTypeBaseOnTypeName(listFoodDTO.getFoodType());
-            food.setFoodType(foodType);
-
-            Food foodResult =foodService.saveFood(food);
-            if (foodResult != null) {
-                listFoodResult.add(foodResult);
+        if (foodDTO.getFoodName() == null) {
+            jsonObject.addProperty("message", "Food name cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getFoodDescription() == null) {
+            jsonObject.addProperty("message", "Food description cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getFoodType() == null) {
+            jsonObject.addProperty("message", "Food type cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getOriginPrice() == null) {
+            jsonObject.addProperty("message", "Food origin price cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getRetailPrice() == null) {
+            jsonObject.addProperty("message", "Food retail price cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        Type foodType = typeService.getTypeBaseOnTypeName(foodDTO.getFoodType());
+        Food food = new Food();
+        food.setFoodStall(foodStall);
+        food.setFoodType(foodType);
+        food.setFoodDescription(foodDTO.getFoodDescription());
+        food.setOriginPrice(foodDTO.getOriginPrice());
+        food.setRetailPrice(foodDTO.getRetailPrice());
+        food.setFoodName(foodDTO.getFoodName());
+        Long currentTime = new Date().getTime();
+        try {
+            // create new folder tmp for saving image
+            File folder = new File(UPLOAD_FOLDER);
+            if (!folder.exists()) {
+                folder.mkdir();
             }
-//        }
-        if (foodResult != null) {
-            return new ResponseEntity<>(foodResult, HttpStatus.OK);
-        } else {
+
+            // make a name for image (name of food stall_bigint)
+            String fileImageName = foodDTO.getFoodName() + "_" + currentTime + ".png";
+            Path path = Paths.get(UPLOAD_FOLDER + fileImageName);
+            // image saving file
+            byte[] bytes = foodCourtImage.getBytes();
+            Files.write(path, bytes);
+
+            // upload to S3
+            Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+            String url = uploader.upload(new File(path.toString()));
+            food.setFoodImage(url);
+
+            // clean up
+            folder.listFiles()[0].delete();
+            folder.delete();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        food.setFoodRating(0);
+        Food result = foodService.saveFood(food);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
@@ -285,27 +330,104 @@ public class FoodStallController {
     @ResponseBody
     public ResponseEntity<Object> deleteFood(@PathVariable("id") Long foodStallId,
                                              @PathVariable("food-id") Long foodId) {
-        if (foodStallId == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food stall",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        JsonObject jsonObject = new JsonObject();
+        FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
+        if (foodStall == null) {
+            jsonObject.addProperty("message", "Cannot find that food stall");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        if (foodId == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        Food food = foodService.getFoodDetailById(foodId);
+        if (food == null) {
+            jsonObject.addProperty("message", "Cannot find that food in food stall");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        foodService.deleteFood(foodId);
-        return new ResponseEntity<>("Successfully delete" ,HttpStatus.OK);
+        food.setIsActive(false);
+        Food result = foodService.saveFood(food);
+        if (result != null) {
+            jsonObject.addProperty("message", "Successfully delete");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        } else {
+            jsonObject.addProperty("message", "Successfully failed");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id:\\d+}/food/{food-id}/edit", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<Object> updateFood(@PathVariable("id") Long foodStallId,
-                                             @PathVariable("food-id") Long foodId) {
-        if (foodStallId == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food stall",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+                                             @PathVariable("food-id") Long foodId,
+                                             @RequestParam("image") MultipartFile foodCourtImage,
+                                             @ModelAttribute FoodCreateDTO foodDTO) {
+        JsonObject jsonObject = new JsonObject();
+        FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
+        if (foodStall == null) {
+            jsonObject.addProperty("message", "Cannot found that food stall id");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
-        if (foodId == null) {
-            return new ResponseEntity<>(FCMSUtil.returnErrorMsg("Can't found that food",HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        if (foodDTO.getFoodName() == null) {
+            jsonObject.addProperty("message", "Food name cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        foodService.deleteFood(foodId);
-        return new ResponseEntity<>("Successfully delete" ,HttpStatus.OK);
+        if (foodDTO.getFoodDescription() == null) {
+            jsonObject.addProperty("message", "Food description cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getFoodType() == null) {
+            jsonObject.addProperty("message", "Food type cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getOriginPrice() == null) {
+            jsonObject.addProperty("message", "Food origin price cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        if (foodDTO.getRetailPrice() == null) {
+            jsonObject.addProperty("message", "Food retail price cannot be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        Type foodType = typeService.getTypeBaseOnTypeName(foodDTO.getFoodType());
+        Food food = foodService.getFoodDetailById(foodId);
+        if (food != null) {
+            food.setFoodType(foodType);
+            food.setFoodDescription(foodDTO.getFoodDescription());
+            food.setOriginPrice(foodDTO.getOriginPrice());
+            food.setRetailPrice(foodDTO.getRetailPrice());
+            food.setFoodName(foodDTO.getFoodName());
+            Long currentTime = new Date().getTime();
+            try {
+                // create new folder tmp for saving image
+                File folder = new File(UPLOAD_FOLDER);
+                if (!folder.exists()) {
+                    folder.mkdir();
+                }
+
+                // make a name for image (name of food stall_bigint)
+                String fileImageName = foodDTO.getFoodName() + "_" + currentTime + ".png";
+                Path path = Paths.get(UPLOAD_FOLDER + fileImageName);
+                // image saving file
+                byte[] bytes = foodCourtImage.getBytes();
+                Files.write(path, bytes);
+
+                // upload to S3
+                Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+                String url = uploader.upload(new File(path.toString()));
+                food.setFoodImage(url);
+
+                // clean up
+                folder.listFiles()[0].delete();
+                folder.delete();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Food result = foodService.saveFood(food);
+            if (result != null) {
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            jsonObject.addProperty("message", "Cannot find food with that id");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

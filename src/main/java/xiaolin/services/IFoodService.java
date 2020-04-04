@@ -10,9 +10,11 @@ public interface IFoodService {
 
     Food saveFood(Food food);
 
-    void deleteFood(Long foodId);
-
-//    food updateFood(Long foodId);
-
     List<Food> getAllFood();
+
+    List<Food> getTopFoodOfFoodCourt();
+
+    Food getFoodDetailById(Long foodId);
+
+    List<Food> getFoodStallMenu(Long foodStallId);
 }

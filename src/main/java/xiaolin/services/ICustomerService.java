@@ -13,4 +13,6 @@ public interface ICustomerService {
     Customer createNewCustomer(Customer customer);
 
     List<Customer> getAllCustomerBaseOnProvider(String provider);
+
+    Customer getCustomerById(Long customerId);
 }

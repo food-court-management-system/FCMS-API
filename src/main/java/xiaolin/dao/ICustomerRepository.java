@@ -20,4 +20,7 @@ public interface ICustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query(value = "SELECT c FROM Customer c WHERE c.provider = :provider")
     List<Customer> getAllCustomerBaseOnProvider(@Param("provider") String provider);
+
+    @Query(value = "SELECT c.* FROM tbl_customers c WHERE c.id = :id AND c.is_active = 'TRUE'", nativeQuery = true)
+    Customer getCustomerDetailById(@Param("id") Long customerId);
 }

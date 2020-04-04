@@ -7,11 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CustomerDto;
 import xiaolin.entities.Customer;
+import xiaolin.entities.Food;
+import xiaolin.entities.Rating;
 import xiaolin.entities.Wallet;
 import xiaolin.services.ICustomerService;
+import xiaolin.services.IFoodService;
+import xiaolin.services.IRatingService;
 import xiaolin.services.IWalletService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 //import xiaolin.services.IRatingService;
 
@@ -24,6 +31,12 @@ public class CustomerController {
 
     @Autowired
     IWalletService walletService;
+
+    @Autowired
+    IRatingService ratingService;
+
+    @Autowired
+    IFoodService foodService;
 
     @RequestMapping(value = "/wallet/{id:\\d+}/edit", method = RequestMethod.PUT)
     @ResponseBody
@@ -188,14 +201,32 @@ public class CustomerController {
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-//    @Autowired
-//    IRatingService ratingService;
 
-//    @ResponseBody
-//    @RequestMapping(value = "/customer/rate/{id:\\d+}", method = RequestMethod.POST)
-//    public Rating ratingFoodStall(@PathVariable("id") Long foodStallId) {
-//
-//
-//        return  ratingService.
-//    }
+    @ResponseBody
+    @RequestMapping(value = "/customer/{id:\\d+}/rate/{food-id:\\d+}", method = RequestMethod.POST)
+    public ResponseEntity<Object> ratingFoodStall(@PathVariable("food-id") Long foodId,
+                                                  @PathVariable("id") Long customerId,
+                                                  @RequestParam("star") Float ratingStar) {
+        JsonObject jsonObject = new JsonObject();
+        if(ratingStar == null) {
+            jsonObject.addProperty("message", "Rating must not be empty");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        }
+        Rating rating = new Rating();
+        rating.setRatingStar(ratingStar);
+        rating.setRatingDate(LocalDate.now());
+        Customer customer = customerService.getCustomerById(customerId);
+        rating.setCustomer(customer);
+        Food food = foodService.getFoodDetailById(foodId);
+        rating.setFood(food);
+        float foodNewRating = (food.getFoodRating() + ratingStar) / 2;
+        food.setFoodRating(foodNewRating);
+        foodService.saveFood(food);
+        Rating result = ratingService.logRating(rating);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
