@@ -259,4 +259,10 @@ public class FoodCourtController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/type/lists", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllFoodTypeInFoodCourt() {
+        return new ResponseEntity<>(typeService.getAllTypesInFoodCourt(), HttpStatus.OK);
+    }
 }
