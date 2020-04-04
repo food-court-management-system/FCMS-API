@@ -51,9 +51,9 @@ public class FCMSMapper {
         if (customerDto.getId() != null) {
             result.setId(customerDto.getId());
         }
-//        if (customerDto.getWallet() != null) {
-//            result.setWallet(customerDto.getWallet());
-//        }
+        if (customerDto.getWallet() != null) {
+            result.setWallet(customerDto.getWallet());
+        }
         if (customerDto.getEmail() != null) {
             result.setEmail(customerDto.getEmail());
         }

@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import xiaolin.dao.ICustomerRepository;
 import xiaolin.entities.Customer;
 
-import java.util.List;
-
 @Service
 public class CustomerService implements ICustomerService{
 
@@ -29,8 +27,5 @@ public class CustomerService implements ICustomerService{
         return cus;
     }
 
-    @Override
-    public List<Customer> getAllCustomerBaseOnProvider(String provider) {
-        return customerRepository.getAllCustomerBaseOnProvider(provider);
-    }
+
 }

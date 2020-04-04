@@ -16,11 +16,9 @@ import xiaolin.dtos.UserDto;
 import xiaolin.dtos.user.ChangePasswordDTO;
 import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
-import xiaolin.entities.FoodStall;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
 import xiaolin.services.ICustomerService;
-import xiaolin.services.IFoodStallService;
 import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
 import xiaolin.util.FCMSUtil;
@@ -45,9 +43,6 @@ public class UserController {
     FCMSUserDetailService fcmsUserDetailService;
 
     @Autowired
-    IFoodStallService foodStallService;
-
-    @Autowired
     private JwtUtil jwtUtil;
 
     @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
@@ -55,13 +50,10 @@ public class UserController {
     public ResponseEntity<Object> loginSocialAccount(@RequestParam("accessToken") String accessToken,
                                                      @RequestParam("provider") String provider) {
         String link, email;
-        String saveProvider;
         if (provider.equals("Google")) {
             link = String.format(environment.getProperty("google.link.get.profile"), accessToken);
-            saveProvider = "Google";
         } else {
             link = String.format(environment.getProperty("facebook.link.get.profile"), accessToken);
-            saveProvider = "Facebook";
         }
         System.out.println("link: " + link);
         try {
@@ -79,7 +71,7 @@ public class UserController {
                 if (wallet != null) {
                     cus = new Customer();
                     cus.setWallet(newWallet);
-                    cus.setProvider(saveProvider);
+                    cus.setProvider(provider);
                     cus.setActive(true);
                     cus.setEmail(email);
                     customerService.createNewCustomer(cus);
@@ -107,8 +99,7 @@ public class UserController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             jsonObject.addProperty("message", "Cannot found that user with that id");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonObject.toString());
-//            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -136,27 +127,6 @@ public class UserController {
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
-        if (user.getRole().equals("fsstaff") || user.getRole().equals("fsmanager")) {
-            FoodStall userFoodStall = foodStallService.getFoodStallDetail(user.getFoodStall().getFoodStallId());
-            if (userFoodStall != null) {
-                if (userFoodStall.isActive()) {
-                    UserDto result = new UserDto();
-                    result.setUserId(user.getId());
-                    result.setUsername(user.getUserName());
-                    result.setPassword(null);
-                    result.setFName(user.getFirstName());
-                    result.setLName(user.getLastName());
-                    result.setAge(user.getAge());
-                    result.setRole(user.getRole());
-                    result.setActive(true);
-                    result.setToken(jwt);
-                    return new ResponseEntity<>(result, HttpStatus.OK);
-                } else {
-                    jsonObject.addProperty("message", "User cannot login because users's food stall is disable");
-                    return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
-                }
-            }
-        }
         UserDto result = new UserDto();
         result.setUserId(user.getId());
         result.setUsername(user.getUserName());
