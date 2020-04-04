@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CustomerDto;
+import xiaolin.dtos.CustomerStatusDTO;
 import xiaolin.entities.Customer;
 import xiaolin.entities.Food;
 import xiaolin.entities.Rating;
@@ -230,16 +231,15 @@ public class CustomerController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{id:\\d+}/edit", method = RequestMethod.PUT)
-    public ResponseEntity<Object> activeOrDeactiveCustomer(@PathVariable("id") Long customerId,
-                                                           @RequestParam("status") Boolean status) {
+    @RequestMapping(value = "/edit", method = RequestMethod.PUT)
+    public ResponseEntity<Object> activeOrDeactiveCustomer(@RequestBody CustomerStatusDTO customerStatusDTO) {
         JsonObject jsonObject = new JsonObject();
-        if (status == null) {
+        if (customerStatusDTO.getStatus() == null) {
             jsonObject.addProperty("message", "Missing parameter status");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        Customer customer = customerService.checkCustomerActiveOrDeactive(customerId, status);
-        if (status.booleanValue()) {
+        Customer customer = customerService.checkCustomerActiveOrDeactive(customerStatusDTO.getCustomerId(), customerStatusDTO.getStatus());
+        if (customerStatusDTO.getStatus().booleanValue()) {
             customer.setActive(false);
         } else {
             customer.setActive(true);
