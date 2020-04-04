@@ -361,38 +361,32 @@ public class FoodStallController {
                                              @ModelAttribute FoodCreateDTO foodDTO) {
         JsonObject jsonObject = new JsonObject();
         FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
+        Food food = foodService.getFoodDetailById(foodId);
+        if (food == null) {
+            jsonObject.addProperty("message", "Cannot found that food");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
         if (foodStall == null) {
             jsonObject.addProperty("message", "Cannot found that food stall id");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
-        if (foodDTO.getFoodName() == null) {
-            jsonObject.addProperty("message", "Food name cannot be empty");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-        }
-        if (foodDTO.getFoodDescription() == null) {
-            jsonObject.addProperty("message", "Food description cannot be empty");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-        }
-        if (foodDTO.getFoodType() == null) {
-            jsonObject.addProperty("message", "Food type cannot be empty");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-        }
-        if (foodDTO.getOriginPrice() == null) {
-            jsonObject.addProperty("message", "Food origin price cannot be empty");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-        }
-        if (foodDTO.getRetailPrice() == null) {
-            jsonObject.addProperty("message", "Food retail price cannot be empty");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-        }
-        Type foodType = typeService.getTypeBaseOnTypeName(foodDTO.getFoodType());
-        Food food = foodService.getFoodDetailById(foodId);
-        if (food != null) {
-            food.setFoodType(foodType);
-            food.setFoodDescription(foodDTO.getFoodDescription());
-            food.setOriginPrice(foodDTO.getOriginPrice());
-            food.setRetailPrice(foodDTO.getRetailPrice());
+        if (foodDTO.getFoodName() != null) {
             food.setFoodName(foodDTO.getFoodName());
+        }
+        if (foodDTO.getFoodDescription() != null) {
+            food.setFoodDescription(foodDTO.getFoodDescription());
+        }
+        if (foodDTO.getFoodType() != null) {
+            Type foodType = typeService.getTypeBaseOnTypeName(foodDTO.getFoodType());
+            food.setFoodType(foodType);
+        }
+        if (foodDTO.getOriginPrice() != null) {
+            food.setOriginPrice(foodDTO.getOriginPrice());
+        }
+        if (foodDTO.getRetailPrice() != null) {
+            food.setRetailPrice(foodDTO.getRetailPrice());
+        }
+        if (foodCourtImage != null) {
             Long currentTime = new Date().getTime();
             try {
                 // create new folder tmp for saving image
@@ -420,15 +414,12 @@ public class FoodStallController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Food result = foodService.saveFood(food);
-            if (result != null) {
-                return new ResponseEntity<>(result, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            }
+        }
+        Food result = foodService.saveFood(food);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            jsonObject.addProperty("message", "Cannot find food with that id");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 }
