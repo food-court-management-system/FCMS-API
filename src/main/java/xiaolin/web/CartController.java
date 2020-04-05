@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CartDto;
 import xiaolin.dtos.CartItemRes;
-import xiaolin.entities.Cart;
 import xiaolin.entities.CartItem;
+import xiaolin.entities.FoodStatus;
 import xiaolin.services.ICartService;
 
 import java.util.ArrayList;
@@ -64,4 +64,11 @@ public class CartController {
         return new ResponseEntity<>(cartService.getCartItem(cartItemId),HttpStatus.OK);
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<Object> updateStatusOrderDetail(@RequestParam("cartItemId")Long cartItemId, @RequestParam("status") FoodStatus foodStatus) {
+        cartService.updateStatusOrderDetail(cartItemId, foodStatus);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

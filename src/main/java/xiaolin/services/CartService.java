@@ -100,7 +100,7 @@ public class CartService implements ICartService{
                 .collect(Collectors.toList());
 
         List<CartItem> cartItems = cartItemRepository.findAll().stream()
-                .filter(o -> ids.contains(o.getFoodId().getId()) && !o.getFoodStatus().equals(FoodStatus.DELIVERY) && !o.getFoodStatus().equals(FoodStatus.CANCLE))
+                .filter(o -> ids.contains(o.getFoodId().getId()) && !o.getFoodStatus().equals(FoodStatus.DELIVERY) && !o.getFoodStatus().equals(FoodStatus.CANCEL))
                 .collect(Collectors.toList());
 
         List<CartItemRes> result = new ArrayList<>();
@@ -128,6 +128,36 @@ public class CartService implements ICartService{
         result.setId(cartItem.getId());
         result.setFoodStatus(cartItem.getFoodStatus().toString());
         return result;
+    }
+
+    @Override
+    public void updateStatusOrderDetail(Long cartItemId, FoodStatus foodStatus) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).get();
+        cartItem.setFoodStatus(foodStatus);
+        cartItemRepository.save(cartItem);
+
+        Cart cart = cartItem.getCart();
+        if (foodStatus == FoodStatus.CANCEL) {
+            Wallet wallet = cart.getWallet();
+            wallet.setBalances(wallet.getBalances() + cartItem.getPurchasedPrice());
+            walletRepository.save(wallet);
+        } else {
+            cart.setCartStatus(Status.INPROGRESS);
+        }
+
+        boolean done = true;
+        List<CartItem> cartItems = cartItemRepository.findAllByCart_Id(cart.getId());
+        for (int i = 0; i < cartItems.size(); i++) {
+            FoodStatus fs = cartItems.get(i).getFoodStatus();
+            if (fs == FoodStatus.QUEUE || fs == FoodStatus.INPROGRESS || fs == FoodStatus.READY) {
+                done = false;
+                break;
+            }
+        }
+        if (done) {
+            cart.setCartStatus(Status.DONE);
+        }
+        cartRepository.save(cart);
     }
 
 

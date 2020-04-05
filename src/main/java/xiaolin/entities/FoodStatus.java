@@ -1,9 +1,9 @@
 package xiaolin.entities;
 
 public enum FoodStatus{
-    DONE,
+    READY,
     INPROGRESS,
     QUEUE,
     DELIVERY,
-    CANCLE
+    CANCEL
 }

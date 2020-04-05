@@ -5,6 +5,7 @@ import xiaolin.dtos.CartDto;
 import xiaolin.dtos.CartItemRes;
 import xiaolin.entities.Cart;
 import xiaolin.entities.CartItem;
+import xiaolin.entities.FoodStatus;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface ICartService {
     List<CartItemRes> getAllCartItemInProcess(Long foodStallId);
 
     CartItemRes getCartItem(Long cartItemId);
+
+    void updateStatusOrderDetail(Long cartItemId, FoodStatus foodStatus);
 }
