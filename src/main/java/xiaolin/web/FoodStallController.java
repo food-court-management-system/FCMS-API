@@ -323,6 +323,7 @@ public class FoodStallController {
             e.printStackTrace();
         }
         food.setFoodRating(0);
+        food.setIsActive(true);
         Food result = foodService.saveFood(food);
         if (result != null) {
             return new ResponseEntity<>(result, HttpStatus.OK);
