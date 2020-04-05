@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CartDto;
 import xiaolin.dtos.CartItemRes;
+import xiaolin.entities.Cart;
 import xiaolin.entities.CartItem;
 import xiaolin.services.ICartService;
 
@@ -50,4 +51,17 @@ public class CartController {
         cartService.order(cart);
         return new ResponseEntity(HttpStatus.OK);
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/process", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllCartItemInProcess(@RequestParam("foodStallId")Long foodStallId) {
+        return new ResponseEntity<>(cartService.getAllCartItemInProcess(foodStallId),HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    public ResponseEntity<Object> getCartItem(@RequestParam("cartItemId")Long cartItemId) {
+        return new ResponseEntity<>(cartService.getCartItem(cartItemId),HttpStatus.OK);
+    }
+
 }

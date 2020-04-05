@@ -8,6 +8,7 @@ import xiaolin.dao.IFoodRepository;
 import xiaolin.dao.IWalletRepository;
 import xiaolin.dtos.CartDto;
 import xiaolin.dtos.CartItemDto;
+import xiaolin.dtos.CartItemRes;
 import xiaolin.entities.*;
 
 import java.time.LocalDate;
@@ -89,6 +90,44 @@ public class CartService implements ICartService{
     @Override
     public List<CartItem> getOrderDetail(Long cartId) {
         return cartItemRepository.findAllByCart_Id(cartId);
+    }
+
+    @Override
+    public List<CartItemRes> getAllCartItemInProcess(Long foodStallId) {
+        List<Food> foods = foodRepository.findAllByFoodStall_FoodStallIdAndIsActive(foodStallId, true);
+        List<Long> ids = foods.stream()
+                .map(Food::getId)
+                .collect(Collectors.toList());
+
+        List<CartItem> cartItems = cartItemRepository.findAll().stream()
+                .filter(o -> ids.contains(o.getFoodId().getId()) && !o.getFoodStatus().equals(FoodStatus.DELIVERY) && !o.getFoodStatus().equals(FoodStatus.CANCLE))
+                .collect(Collectors.toList());
+
+        List<CartItemRes> result = new ArrayList<>();
+        for (CartItem cartItem: cartItems) {
+            CartItemRes r = new CartItemRes();
+            r.setNote(cartItem.getNote());
+            r.setQuantity(cartItem.getQuantity());
+            r.setPurchasedPrice(cartItem.getPurchasedPrice());
+            r.setFoodName(cartItem.getFoodId().getFoodName());
+            r.setId(cartItem.getId());
+            r.setFoodStatus(cartItem.getFoodStatus().toString());
+            result.add(r);
+        }
+        return result;
+    }
+
+    @Override
+    public CartItemRes getCartItem(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).get();
+        CartItemRes result = new CartItemRes();
+        result.setNote(cartItem.getNote());
+        result.setQuantity(cartItem.getQuantity());
+        result.setPurchasedPrice(cartItem.getPurchasedPrice());
+        result.setFoodName(cartItem.getFoodId().getFoodName());
+        result.setId(cartItem.getId());
+        result.setFoodStatus(cartItem.getFoodStatus().toString());
+        return result;
     }
 
 

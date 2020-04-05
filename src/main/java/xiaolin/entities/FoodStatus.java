@@ -5,5 +5,5 @@ public enum FoodStatus{
     INPROGRESS,
     QUEUE,
     DELIVERY,
-    FINISH
+    CANCLE
 }

@@ -16,7 +16,7 @@ public class UserDto {
     private String lName;
     private String role;
     private int age;
-    private Long foodStallID;
+    private Long foodStallId;
     private boolean isActive;
     private String token;
 
