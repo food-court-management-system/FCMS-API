@@ -19,4 +19,6 @@ public interface IUserService {
     User loginWithUsernameAndPwd(String username, String password);
 
     List<User> getAllUserOfFoodCourtBaseOnRole(String role);
+
+    List<User> getAllFoodStallStaffOfFoodStall(Long foodStallId);
 }

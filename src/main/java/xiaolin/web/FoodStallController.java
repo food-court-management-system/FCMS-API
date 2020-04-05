@@ -9,15 +9,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import xiaolin.dtos.FoodDto;
 import xiaolin.dtos.food.FoodCreateDTO;
 import xiaolin.dtos.foodstall.FoodStallDetailDTO;
+import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Food;
 import xiaolin.entities.FoodStall;
 import xiaolin.entities.Type;
+import xiaolin.entities.User;
 import xiaolin.services.IFoodService;
 import xiaolin.services.IFoodStallService;
 import xiaolin.services.ITypeService;
+import xiaolin.services.IUserService;
 import xiaolin.uploader.S3Uploader;
 import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
@@ -42,6 +44,9 @@ public class FoodStallController {
 
     @Autowired
     ITypeService typeService;
+
+    @Autowired
+    IUserService userService;
 
     @Value("${amazonProperties.accessKey}")
     private String accessKey;
@@ -69,17 +74,17 @@ public class FoodStallController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity<Object> searchFoodStallByName(@RequestParam(value = "name", required = false) String foodStallName) {
-        List<FoodStall> foodStallList;
-        if (foodStallName == null) {
-            foodStallList = foodStallService.listAllActiveFoodStall();
-        } else {
-            foodStallList = foodStallService.searchFoodStallByName(foodStallName);
-        }
-        return new ResponseEntity<>(foodStallList, HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/search", method = RequestMethod.GET)
+//    @ResponseBody
+//    public ResponseEntity<Object> searchFoodStallByName(@RequestParam(value = "name", required = false) String foodStallName) {
+//        List<FoodStall> foodStallList;
+//        if (foodStallName == null) {
+//            foodStallList = foodStallService.listAllActiveFoodStall();
+//        } else {
+//            foodStallList = foodStallService.searchFoodStallByName(foodStallName);
+//        }
+//        return new ResponseEntity<>(foodStallList, HttpStatus.OK);
+//    }
 
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.ALL_VALUE)
@@ -421,5 +426,56 @@ public class FoodStallController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/{id}/food/{food-id}/detail", method = RequestMethod.GET)
+    public ResponseEntity<Object> getFoodDetailById(@PathVariable("id") Long foodStallId,
+                                                    @PathVariable("food-id") Long foodId) {
+        JsonObject jsonObject = new JsonObject();
+        if (foodStallId == null) {
+            jsonObject.addProperty("message", "Cannot found that food stall");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        }
+        if (foodId == null) {
+            jsonObject.addProperty("message", "Cannot found that food");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+        }
+        Food result = foodService.getFoodDetailById(foodId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/{id}/food-stall-staff/list", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllFoodStallStaffOfFoodStall(@PathVariable("id") Long foodStallId) {
+        List<User> staffList = userService.getAllFoodStallStaffOfFoodStall(foodStallId );
+        List<UserDetailDTO> foodStallStaffListResult = new ArrayList<>();
+        for (User staff: staffList) {
+            UserDetailDTO foodStallStaff = new UserDetailDTO();
+            foodStallStaff.setUserId(staff.getId());
+            foodStallStaff.setFirstName(staff.getFirstName());
+            foodStallStaff.setLastName(staff.getLastName());
+            foodStallStaff.setAge(staff.getAge());
+            foodStallStaff.setUsername(staff.getUserName());
+            foodStallStaffListResult.add(foodStallStaff);
+        }
+        return new ResponseEntity<>(foodStallStaffListResult, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public ResponseEntity<Object> getFoodStallBaseOnFoodName(@RequestParam("name") String foodName) {
+        List<FoodStall> foodStallList = foodStallService.searchFoodStallBaseOnFoodName(foodName);
+        List<FoodStallDetailDTO> result = new ArrayList<>();
+        for(FoodStall foodStall: foodStallList) {
+            FoodStallDetailDTO dto = new FoodStallDetailDTO();
+            dto.setFoodStallDescription(null);
+            dto.setFoodStallName(foodStall.getFoodStallName());
+            dto.setFoodStallId(foodStall.getFoodStallId());
+            dto.setFoodStallImage(foodStall.getFoodStallImage());
+            dto.setFoodStallRating(foodStall.getFoodStallRating());
+            result.add(dto);
+        }
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -20,4 +20,6 @@ public interface IFoodStallService {
     List<FoodStall> searchFoodStallByName(String name);
 
     List<FoodStall> filterFoodStallByCategory(String category);
+
+    List<FoodStall> searchFoodStallBaseOnFoodName(String foodName);
 }

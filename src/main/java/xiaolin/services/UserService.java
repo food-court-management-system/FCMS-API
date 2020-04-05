@@ -74,4 +74,9 @@ public class UserService implements IUserService{
     public List<User> getAllUserOfFoodCourtBaseOnRole(String role) {
         return userRepository.getAllUserOfFoodCourtBaseOnRole(role);
     }
+
+    @Override
+    public List<User> getAllFoodStallStaffOfFoodStall(Long foodStallId) {
+        return userRepository.getAllFoodStallStaffOfFoodStall(foodStallId);
+    }
 }

@@ -43,4 +43,9 @@ public class FoodStallService implements IFoodStallService{
     public List<FoodStall> filterFoodStallByCategory(String category) {
         return foodStallRepository.filterFoodStallByCategory(category);
     }
+
+    @Override
+    public List<FoodStall> searchFoodStallBaseOnFoodName(String foodName) {
+        return foodStallRepository.searchFoodBaseByName(foodName);
+    }
 }
