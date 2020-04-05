@@ -46,7 +46,7 @@ public class FoodCourtController {
 
     @RequestMapping(value = "/cashier/create", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> createCahsierOfFoodCourt(@RequestBody UserCreateDTO cashierDTO) {
+    public ResponseEntity<Object> createCashierOfFoodCourt(@RequestBody UserCreateDTO cashierDTO) {
         User cashier = new User();
         User user = userService.getUserInfo(cashierDTO.getUsername());
         JsonObject jsonObject = new JsonObject();

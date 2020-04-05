@@ -134,6 +134,12 @@ public class UserController {
             jsonObject.addProperty("message", "Wrong username and password. Please login again");
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
         }
+
+        if (user.getFoodStall() != null && !user.getFoodStall().getIsActive()) {
+            jsonObject.addProperty("message", "Your foodStall is disabled");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(jsonObject.toString());
+        }
+
         UserDetails userDetails = fcmsUserDetailService.loadUserByUsername(username);
 
         String jwt  = jwtUtil.generateToken(userDetails, user.getRole());
@@ -146,6 +152,7 @@ public class UserController {
         result.setAge(user.getAge());
         result.setRole(user.getRole());
         result.setActive(true);
+        result.setFoodStallId(user.getFoodStall() != null ? user.getFoodStall() .getFoodStallId() : null);
         result.setToken(jwt);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
