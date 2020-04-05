@@ -362,7 +362,7 @@ public class FoodStallController {
     @ResponseBody
     public ResponseEntity<Object> updateFood(@PathVariable("id") Long foodStallId,
                                              @PathVariable("food-id") Long foodId,
-                                             @RequestParam("image") MultipartFile foodCourtImage,
+                                             @RequestParam(value = "image", required = false) MultipartFile foodCourtImage,
                                              @ModelAttribute FoodCreateDTO foodDTO) {
         JsonObject jsonObject = new JsonObject();
         FoodStall foodStall = foodStallService.getFoodStallDetail(foodStallId);
