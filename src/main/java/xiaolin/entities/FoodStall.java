@@ -5,8 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "tblFoodStalls")
@@ -27,15 +25,13 @@ public class FoodStall implements Serializable {
     @Column(name = "rating")
     private float foodStallRating;
 
-    @Column
+    @Column(name = "isActive")
     private boolean isActive;
-
-//    @OneToMany(targetEntity = User.class, mappedBy = "foodStall", fetch = FetchType.LAZY)
-//    private List<User> foodStallOwners = new ArrayList<>();
-
-//    @OneToMany(targetEntity = Food.class, mappedBy = "foodStall", fetch = FetchType.EAGER)
-//    private List<Food> foods = new ArrayList<>();
 
     @Column(name = "foodStallImage", columnDefinition = "VARCHAR", length = Integer.MAX_VALUE)
     private String foodStallImage;
+
+    public boolean getIsActive() {
+        return isActive;
+    }
 }

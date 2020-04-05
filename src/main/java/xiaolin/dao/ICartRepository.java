@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import xiaolin.entities.Cart;
 import xiaolin.entities.CartItem;
+import xiaolin.entities.Status;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ import java.util.List;
 public interface ICartRepository extends JpaRepository<Cart, Long> {
 
     List<Cart> getAllByWallet_Id(Long walletId);
+
+    List<Cart> getAllByCartStatus(Status status);
 }

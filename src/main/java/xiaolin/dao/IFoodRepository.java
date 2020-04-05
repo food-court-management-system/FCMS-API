@@ -23,4 +23,6 @@ public interface IFoodRepository extends JpaRepository<Food, Long> {
 
     @Query(value = "SELECT f.* FROM tbl_foods f WHERE f.food_stall_id =:id AND f.is_active = 'TRUE'", nativeQuery = true)
     List<Food> getFoodStallMenu(@Param("id") Long foodStallId);
+
+    List<Food> findAllByFoodStall_FoodStallIdAndIsActive(Long foodStallId, boolean isActive);
 }
