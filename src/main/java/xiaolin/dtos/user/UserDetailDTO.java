@@ -14,4 +14,5 @@ public class UserDetailDTO implements Serializable {
     private String firstName;
     private int age;
     private String username;
+    private String role;
 }

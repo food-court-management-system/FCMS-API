@@ -1,6 +1,7 @@
 package xiaolin.services;
 
 import org.springframework.stereotype.Service;
+import xiaolin.dtos.user.UpdateProfileDTO;
 import xiaolin.entities.User;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface IUserService {
 
     String getUserRole(String username, String password);
 
+    User getUserInformation(String username);
+
     User getUserInformation(Long userId);
 
     User loginWithUsernameAndPwd(String username, String password);
@@ -21,4 +24,6 @@ public interface IUserService {
     List<User> getAllUserOfFoodCourtBaseOnRole(String role);
 
     List<User> getAllFoodStallStaffOfFoodStall(Long foodStallId);
+
+    void updateProfile(UpdateProfileDTO updateProfileDTO);
 }

@@ -14,9 +14,9 @@ import xiaolin.config.jwt.JwtUtil;
 import xiaolin.dtos.LoginFormDto;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.user.ChangePasswordDTO;
+import xiaolin.dtos.user.UpdateProfileDTO;
 import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
-import xiaolin.entities.FoodStall;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
 import xiaolin.services.ICustomerService;
@@ -93,11 +93,11 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"/{id:\\d+}/detail"}, method = RequestMethod.GET)
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Object> getUserDetail(@PathVariable("id") Long userId){
+    public ResponseEntity<Object> getUserDetail(@RequestParam("username") String username){
         JsonObject jsonObject = new JsonObject();
-        User user = userService.getUserInformation(userId);
+        User user = userService.getUserInformation(username);
         if (user != null) {
             UserDetailDTO result = new UserDetailDTO();
             result.setUserId(user.getId());
@@ -105,7 +105,7 @@ public class UserController {
             result.setFirstName(user.getFirstName());
             result.setLastName(user.getLastName());
             result.setAge(user.getAge());
-
+            result.setRole(user.getRole());
             return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
             jsonObject.addProperty("message", "Cannot found that user with that id");
@@ -157,11 +157,10 @@ public class UserController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id:\\d+}/change-password", method = RequestMethod.PUT)
+    @RequestMapping(value = "/change-password", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity<Object> changeUserPassword(@PathVariable("id") Long userId,
-                                                     @RequestBody ChangePasswordDTO changePasswordDTO) {
-        User user = userService.getUserInformation(userId);
+    public ResponseEntity<Object> changeUserPassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        User user = userService.getUserInformation(changePasswordDTO.getUsername());
         JsonObject jsonObject = new JsonObject();
         if (changePasswordDTO.getNewPassword() == null) {
             jsonObject.addProperty("message", "Must have new password for changing");
@@ -185,10 +184,10 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/profile", method = RequestMethod.PUT)
     @ResponseBody
-    @RequestMapping(value = "/sad", method = RequestMethod.GET)
-    public String testAccessToken() {
-        return "This is access token works";
+    public ResponseEntity<Object> updateProfile(@RequestBody UpdateProfileDTO updateProfileDTO) {
+        userService.updateProfile(updateProfileDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import xiaolin.dao.IUserRepository;
 import xiaolin.dtos.UserDto;
 import xiaolin.dtos.mapper.FCMSMapper;
+import xiaolin.dtos.user.UpdateProfileDTO;
 import xiaolin.entities.User;
 import xiaolin.util.FCMSUtil;
 
@@ -19,33 +20,6 @@ public class UserService implements IUserService{
 
     @Override
     public User saveUser(User user) {
-
-//        String username = "admin";
-//        String password = "123456789";
-//        String role = "admin";
-//        boolean isActive = true;
-//
-//        FCMSUtil util = new FCMSUtil();
-//        String encodePassword = util.encodePassword(password);
-//        UserDto dto = new UserDto();
-//        dto.setUsername(username);
-//        dto.setPassword(encodePassword);
-//        dto.setRole(role);
-//        dto.setActive(isActive);
-//        User user = FCMSMapper.mapToUser(dto);
-////        User user = new User(username, encodePassword, role, isActive);
-//        userRepository.save(user);
-//        user.setUserName("cashier_1");
-//        user.setRole("cashier");
-//        userRepository.save(user);
-//        user.setUserName("cashier_2");
-//        userRepository.save(user);
-//        user.setUserName("food_stall_1");
-//        user.setRole("foodstall");
-//        userRepository.save(user);
-//        user.setUserName("food_stall_2");
-//        userRepository.save(user);
-//        user.setUserName("food_stall_3");
         return userRepository.save(user);
     }
 
@@ -66,6 +40,11 @@ public class UserService implements IUserService{
     }
 
     @Override
+    public User getUserInformation(String username) {
+        return userRepository.getUserInformation(username);
+    }
+
+    @Override
     public User loginWithUsernameAndPwd(String username, String password) {
         return userRepository.loginWithUsernameAndPwd(username, password);
     }
@@ -78,5 +57,14 @@ public class UserService implements IUserService{
     @Override
     public List<User> getAllFoodStallStaffOfFoodStall(Long foodStallId) {
         return userRepository.getAllFoodStallStaffOfFoodStall(foodStallId);
+    }
+
+    @Override
+    public void updateProfile(UpdateProfileDTO updateProfileDTO) {
+        User user = userRepository.findByUserName(updateProfileDTO.getUsername());
+        user.setFirstName(updateProfileDTO.getFirstName());
+        user.setLastName(updateProfileDTO.getLastName());
+        user.setAge(updateProfileDTO.getAge());
+        userRepository.save(user);
     }
 }

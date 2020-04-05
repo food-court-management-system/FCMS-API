@@ -31,6 +31,9 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT u.* FROM tbl_users u WHERE u.id = :id AND u.is_active = 'TRUE'", nativeQuery = true)
     User getUserInformation(@Param("id") Long userId);
 
+    @Query(value = "SELECT u.* FROM tbl_users u WHERE u.username = :username AND u.is_active = 'TRUE'", nativeQuery = true)
+    User getUserInformation(@Param("username") String username);
+
     @Query(value = "SELECT u.* FROM tbl_users u WHERE u.username = :username " +
                                 "AND u.password = :password " +
                                 "AND u.is_active = 'TRUE'", nativeQuery = true)
@@ -42,4 +45,6 @@ public interface IUserRepository extends JpaRepository<User, Long> {
             "AND u.is_active = 'TRUE' " +
             "AND u.food_stall_id = :id", nativeQuery = true)
     List<User> getAllFoodStallStaffOfFoodStall(@Param("id") Long foodStallId);
+
+    User findByUserName(String username);
 }

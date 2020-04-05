@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class ChangePasswordDTO implements Serializable {
-
+    private String username;
     private String newPassword;
     private String oldPassword;
 }
