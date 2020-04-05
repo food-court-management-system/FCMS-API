@@ -16,9 +16,11 @@ import xiaolin.dtos.UserDto;
 import xiaolin.dtos.user.ChangePasswordDTO;
 import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
+import xiaolin.entities.FoodStall;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
 import xiaolin.services.ICustomerService;
+import xiaolin.services.IFoodStallService;
 import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
 import xiaolin.util.FCMSUtil;
@@ -29,7 +31,7 @@ public class UserController {
 
     @Autowired
     Environment environment;
-    
+
     @Autowired
     IUserService userService;
 
@@ -43,6 +45,9 @@ public class UserController {
     FCMSUserDetailService fcmsUserDetailService;
 
     @Autowired
+    IFoodStallService foodStallService;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
@@ -50,6 +55,7 @@ public class UserController {
     public ResponseEntity<Object> loginSocialAccount(@RequestParam("accessToken") String accessToken,
                                                      @RequestParam("provider") String provider) {
         String link, email;
+        Wallet result;
         if (provider.equals("Google")) {
             link = String.format(environment.getProperty("google.link.get.profile"), accessToken);
         } else {
@@ -68,6 +74,7 @@ public class UserController {
                 newWallet.setInUseBalances(0);
                 newWallet.setBalances(0);
                 Wallet wallet = walletService.saveWallet(newWallet);
+                result = wallet;
                 if (wallet != null) {
                     cus = new Customer();
                     cus.setWallet(newWallet);
@@ -76,12 +83,14 @@ public class UserController {
                     cus.setEmail(email);
                     customerService.createNewCustomer(cus);
                 }
+            } else {
+                result = walletService.searchCustomerWalletByCustomerId(cus.getId());
             }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = {"/{id:\\d+}/detail"}, method = RequestMethod.GET)

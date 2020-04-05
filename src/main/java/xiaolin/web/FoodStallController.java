@@ -90,11 +90,11 @@ public class FoodStallController {
             jsonObject.addProperty("message", "Food stall image must have in your food stall");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        if (foodStallDetailDTO.getFoodStallName().length() == 0) {
+        if (foodStallDetailDTO.getFoodStallName() == null) {
             jsonObject.addProperty("message", "Food stall name must have in your food stall");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
-        if (foodStallDetailDTO.getFoodStallDescription().length() == 0) {
+        if (foodStallDetailDTO.getFoodStallDescription() == null) {
             jsonObject.addProperty("message", "Food stall description must have in your food stall");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
         }
@@ -149,10 +149,10 @@ public class FoodStallController {
             jsonObject.addProperty("message", "Cannot find food stall with that id");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
         }
-        if (foodStallDetailDTO.getFoodStallName().length() != 0) {
+        if (foodStallDetailDTO.getFoodStallName() != null) {
             foodStall.setFoodStallName(foodStallDetailDTO.getFoodStallName());
         }
-        if (foodStallDetailDTO.getFoodStallDescription().length() != 0) {
+        if (foodStallDetailDTO.getFoodStallDescription() != null) {
             foodStall.setFoodStallDescription(foodStallDetailDTO.getFoodStallDescription());
         }
         Long currentTime = new Date().getTime();
