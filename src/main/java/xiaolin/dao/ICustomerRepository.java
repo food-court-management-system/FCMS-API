@@ -14,7 +14,7 @@ public interface ICustomerRepository extends JpaRepository<Customer, Long> {
 
     //public List<Customer> getAllCustomers();
 
-    @Query(value = "SELECT c FROM Customer c WHERE c.email = :email AND c.provider = :provider AND c.isActive = TRUE")
+    @Query(value = "SELECT c FROM Customer c WHERE c.email = :email AND c.provider = :provider")
     Customer checkExistCustomer(@Param("provider") String provider,
                                 @Param("email") String email);
 

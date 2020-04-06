@@ -84,7 +84,11 @@ public class UserController {
                     customerService.createNewCustomer(cus);
                 }
             } else {
-                result = walletService.searchCustomerWalletByCustomerId(cus.getId());
+                if (cus.isActive()) {
+                    result = walletService.searchCustomerWalletByCustomerId(cus.getId());
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
