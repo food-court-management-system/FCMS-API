@@ -20,6 +20,7 @@ public class FoodCourtService implements IFoodCourtService{
 
         if (result != null) {
             FoodCourtInformationDto dto = new FoodCourtInformationDto();
+            dto.setFoodCourtId(result.getFoodCourtId());
             dto.setAddress(result.getFoodCourtAddress());
             dto.setFoodCourtDescription(result.getFoodCourtDescription());
             dto.setFoodCourtImage(result.getFoodCourtImage());

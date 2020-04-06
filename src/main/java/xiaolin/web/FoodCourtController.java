@@ -1,10 +1,16 @@
 package xiaolin.web;
 
+import com.amazonaws.services.s3.model.Region;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import xiaolin.dtos.FoodCourtDetailInfoDTO;
+import xiaolin.dtos.FoodCourtInformationDto;
 import xiaolin.dtos.user.FoodStallManagerDetailDTO;
 import xiaolin.dtos.user.FoodStallUserCreateDTO;
 import xiaolin.dtos.user.UserCreateDTO;
@@ -17,9 +23,16 @@ import xiaolin.services.IFoodCourtService;
 import xiaolin.services.IFoodStallService;
 import xiaolin.services.ITypeService;
 import xiaolin.services.IUserService;
+import xiaolin.uploader.S3Uploader;
+import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -37,6 +50,15 @@ public class FoodCourtController {
 
     @Autowired
     IFoodStallService foodStallService;
+
+    @Value("${amazonProperties.accessKey}")
+    private String accessKey;
+    @Value("${amazonProperties.secretKey}")
+    private String secretKey;
+    @Value("${amazonProperties.bucket}")
+    private String bucket;
+
+    private static final String UPLOAD_FOLDER = "temp/";
 
     @RequestMapping(value = "/about", method = RequestMethod.GET)
     @ResponseBody
@@ -103,10 +125,55 @@ public class FoodCourtController {
         }
     }
 
-    @RequestMapping(value = "/information", method = RequestMethod.POST)
+    @RequestMapping(value = "/information", method = RequestMethod.PUT, consumes = MediaType.ALL_VALUE)
     @ResponseBody
-    public FoodCourtInformation createFoodCourtInformation(@RequestBody FoodCourtInformation foodCourtInformation) {
-        return foodCourtService.saveFoodCourtInformation(foodCourtInformation);
+    public ResponseEntity<Object> createFoodCourtInformation(@RequestParam(value = "image", required = false) MultipartFile image,
+                                                             @ModelAttribute FoodCourtDetailInfoDTO foodCourtDetailInfoDTO) {
+        FoodCourtInformation foodCourtInformation = foodCourtService.getFoodCourtInformation();
+        if (foodCourtDetailInfoDTO.getFoodCourtName().length() != 0) {
+            foodCourtInformation.setFoodCourtName(foodCourtDetailInfoDTO.getFoodCourtName());
+        }
+        if (foodCourtDetailInfoDTO.getFoodCourtAddress().length() != 0) {
+            foodCourtInformation.setFoodCourtAddress(foodCourtDetailInfoDTO.getFoodCourtAddress());
+        }
+        if (foodCourtDetailInfoDTO.getFoodCourtDescription().length() != 0) {
+            foodCourtInformation.setFoodCourtDescription(foodCourtDetailInfoDTO.getFoodCourtDescription());
+        }
+        Long currentTime = new Date().getTime();
+        if (image != null) {
+            try {
+                // create new folder tmp for saving image
+                File folder = new File(UPLOAD_FOLDER);
+                if (!folder.exists()) {
+                    folder.mkdir();
+                }
+
+                // make a name for image (name of food stall_bigint)
+                String fileImageName = foodCourtDetailInfoDTO.getFoodCourtName() + "_" + currentTime + ".png";
+                Path path = Paths.get(UPLOAD_FOLDER + fileImageName);
+                // image saving file
+                byte[] bytes = image.getBytes();
+                Files.write(path, bytes);
+
+                // upload to S3
+                Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+                String url = uploader.upload(new File(path.toString()));
+                foodCourtInformation.setFoodCourtImage(url);
+
+                // clean up
+                folder.listFiles()[0].delete();
+                folder.delete();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        FoodCourtInformation result = foodCourtService.saveFoodCourtInformation(foodCourtInformation);
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ResponseBody
