@@ -69,20 +69,21 @@ public class UserController {
             System.out.println("email: " + email);
             Customer cus = customerService.checkExistCustomer(provider, email);
             if (cus == null) {
+                cus = new Customer();
+                cus.setProvider(provider);
+                cus.setActive(true);
+                cus.setEmail(email);
+
                 Wallet newWallet = new Wallet();
                 newWallet.setActive(true);
                 newWallet.setInUseBalances(0);
                 newWallet.setBalances(0);
-                Wallet wallet = walletService.saveWallet(newWallet);
-                result = wallet;
-                if (wallet != null) {
-                    cus = new Customer();
-                    cus.setWallet(newWallet);
-                    cus.setProvider(provider);
-                    cus.setActive(true);
-                    cus.setEmail(email);
-                    customerService.createNewCustomer(cus);
-                }
+                newWallet.setCustomer(cus);
+
+                cus.setWallet(newWallet);
+                Customer customer = customerService.createNewCustomer(cus);
+                newWallet.setId(customer.getWallet().getId());
+                result = newWallet;
             } else {
                 if (cus.isActive()) {
                     result = walletService.searchCustomerWalletByCustomerId(cus.getId());

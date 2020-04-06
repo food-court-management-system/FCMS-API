@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CustomerDto;
 import xiaolin.dtos.CustomerStatusDTO;
+import xiaolin.dtos.ScanQrCodeRes;
 import xiaolin.entities.Customer;
 import xiaolin.entities.Food;
 import xiaolin.entities.Rating;
@@ -232,23 +233,32 @@ public class CustomerController {
 
     @ResponseBody
     @RequestMapping(value = "/edit", method = RequestMethod.PUT)
-    public ResponseEntity<Object> activeOrDeactiveCustomer(@RequestBody CustomerStatusDTO customerStatusDTO) {
-//        JsonObject jsonObject = new JsonObject();
-//        if (customerStatusDTO.getStatus() == null) {
-//            jsonObject.addProperty("message", "Missing parameter status");
-//            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
-//        }
-//        Customer customer = customerService.checkCustomerActiveOrDeactive(customerStatusDTO.getCustomerId(), customerStatusDTO.getStatus());
-//        if (customerStatusDTO.getStatus().booleanValue()) {
-//            customer.setActive(false);
-//        } else {
-//            customer.setActive(true);
-//        }
-//        Customer result = customerService.createNewCustomer(customer);
-//        if (result != null) {
-//            return new ResponseEntity<>(result, HttpStatus.OK);
-//        } else {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        }
+    public ResponseEntity<Object> updateCustomerStatus(@RequestBody CustomerStatusDTO customerStatusDTO) {
+        JsonObject jsonObject = new JsonObject();
+        if (customerStatusDTO.getStatus() == null) {
+            jsonObject.addProperty("message", "Missing parameter status");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        }
+        customerService.updateCustomerStatus(customerStatusDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/scan", method = RequestMethod.GET)
+    public ResponseEntity<Object> scanQrCode(@RequestParam("walletId") Long walletId) {
+        JsonObject jsonObject = new JsonObject();
+        Wallet customerWallet = walletService.findById(walletId);
+        if (customerWallet == null) {
+            jsonObject.addProperty("message", "Cannot find that customer wallet");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.BAD_REQUEST);
+        } else {
+            ScanQrCodeRes scanQrCodeRes = new ScanQrCodeRes();
+            scanQrCodeRes.setWalletId(customerWallet.getId());
+            scanQrCodeRes.setBalance(customerWallet.getBalances());
+            scanQrCodeRes.setEmail(customerWallet.getCustomer().getEmail());
+            scanQrCodeRes.setProvider(customerWallet.getCustomer().getProvider());
+            scanQrCodeRes.setUserId(customerWallet.getCustomer().getId());
+            return new ResponseEntity<>(scanQrCodeRes, HttpStatus.OK);
+        }
     }
 }

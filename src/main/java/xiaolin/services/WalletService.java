@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import xiaolin.dao.IWalletRepository;
 import xiaolin.entities.Wallet;
 
+import java.util.Optional;
+
 @Service
 public class WalletService implements IWalletService{
 
@@ -24,5 +26,14 @@ public class WalletService implements IWalletService{
     @Override
     public Wallet searchCustomerWalletByCustomerId(Long customerId) {
         return walletRepository.findWalletByCustomerId(customerId);
+    }
+
+    @Override
+    public Wallet findById(Long walletId) {
+        Optional<Wallet> wallet = walletRepository.findById(walletId);
+        if (wallet.isPresent()) {
+            return wallet.get();
+        }
+        return null;
     }
 }

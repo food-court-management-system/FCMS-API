@@ -19,8 +19,7 @@ public class Customer implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @OneToOne(targetEntity = Wallet.class, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToOne(cascade = {CascadeType.ALL})
     private Wallet wallet;
 
     @Column(name = "email", nullable = false)
