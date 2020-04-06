@@ -1,6 +1,7 @@
 package xiaolin.services;
 
 import org.springframework.stereotype.Service;
+import xiaolin.dtos.CustomerStatusDTO;
 import xiaolin.entities.Customer;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface ICustomerService {
 
     Customer getCustomerById(Long customerId);
 
-    Customer checkCustomerActiveOrDeactive(Long customerId, Boolean status);
+    void updateCustomerStatus(CustomerStatusDTO customerStatusDTO);
 }

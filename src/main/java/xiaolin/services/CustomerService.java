@@ -3,6 +3,7 @@ package xiaolin.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xiaolin.dao.ICustomerRepository;
+import xiaolin.dtos.CustomerStatusDTO;
 import xiaolin.entities.Customer;
 
 import java.util.List;
@@ -40,7 +41,10 @@ public class CustomerService implements ICustomerService{
     }
 
     @Override
-    public Customer checkCustomerActiveOrDeactive(Long customerId, Boolean status) {
-        return customerRepository.checkCustomerActiveOrDeactive(customerId, status);
+    public void updateCustomerStatus(CustomerStatusDTO customerStatusDTO) {
+        Customer customer = customerRepository.findById(customerStatusDTO.getCustomerId()).get();
+        customer.setActive(customerStatusDTO.getStatus());
+        customerRepository.save(customer);
     }
+
 }

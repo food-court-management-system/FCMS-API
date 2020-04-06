@@ -1,5 +1,7 @@
 package xiaolin.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +26,9 @@ public class Wallet implements Serializable {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @OneToOne
+    @JsonIgnore
+    private Customer customer;
     
 }

@@ -11,4 +11,6 @@ public interface IWalletService {
     Wallet getCustomerWalletByWalletId(Long walletId, Boolean status);
 
     Wallet searchCustomerWalletByCustomerId(Long customerId);
+
+    Wallet findById(Long walletId);
 }
