@@ -465,8 +465,13 @@ public class FoodStallController {
 
     @ResponseBody
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ResponseEntity<Object> getFoodStallBaseOnFoodName(@RequestParam("name") String foodName) {
-        List<FoodStall> foodStallList = foodStallService.searchFoodStallBaseOnFoodName(foodName);
+    public ResponseEntity<Object> getFoodStallBaseOnFoodName(@RequestParam(value = "name") String foodName) {
+        List<FoodStall> foodStallList;
+        if (foodName.length() == 0) {
+            foodStallList = foodStallService.listAllActiveFoodStall();
+        } else {
+            foodStallList = foodStallService.searchFoodStallBaseOnFoodName(foodName);
+        }
         List<FoodStallDetailDTO> result = new ArrayList<>();
         for(FoodStall foodStall: foodStallList) {
             FoodStallDetailDTO dto = new FoodStallDetailDTO();
