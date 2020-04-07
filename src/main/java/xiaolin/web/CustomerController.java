@@ -261,4 +261,11 @@ public class CustomerController {
             return new ResponseEntity<>(scanQrCodeRes, HttpStatus.OK);
         }
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/wallet/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Object> getCustomerWalletDetail(@PathVariable("id") Long walletId) {
+        Wallet result = walletService.findById(walletId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }
