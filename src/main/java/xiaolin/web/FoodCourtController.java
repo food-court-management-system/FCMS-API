@@ -140,7 +140,7 @@ public class FoodCourtController {
             foodCourtInformation.setFoodCourtDescription(foodCourtDetailInfoDTO.getFoodCourtDescription());
         }
         Long currentTime = new Date().getTime();
-        if (!image.isEmpty()) {
+        if (image != null) {
             try {
                 // create new folder tmp for saving image
                 File folder = new File(UPLOAD_FOLDER);
