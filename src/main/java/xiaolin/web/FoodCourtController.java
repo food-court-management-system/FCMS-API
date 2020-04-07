@@ -130,13 +130,13 @@ public class FoodCourtController {
     public ResponseEntity<Object> createFoodCourtInformation(@RequestParam(value = "image", required = false) MultipartFile image,
                                                              @ModelAttribute FoodCourtDetailInfoDTO foodCourtDetailInfoDTO) {
         FoodCourtInformation foodCourtInformation = foodCourtService.getFoodCourtInformation();
-        if (foodCourtDetailInfoDTO.getFoodCourtName().length() != 0) {
+        if (foodCourtDetailInfoDTO.getFoodCourtName() != null) {
             foodCourtInformation.setFoodCourtName(foodCourtDetailInfoDTO.getFoodCourtName());
         }
-        if (foodCourtDetailInfoDTO.getFoodCourtAddress().length() != 0) {
+        if (foodCourtDetailInfoDTO.getFoodCourtAddress() != null) {
             foodCourtInformation.setFoodCourtAddress(foodCourtDetailInfoDTO.getFoodCourtAddress());
         }
-        if (foodCourtDetailInfoDTO.getFoodCourtDescription().length() != 0) {
+        if (foodCourtDetailInfoDTO.getFoodCourtDescription() != null) {
             foodCourtInformation.setFoodCourtDescription(foodCourtDetailInfoDTO.getFoodCourtDescription());
         }
         Long currentTime = new Date().getTime();
