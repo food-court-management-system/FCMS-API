@@ -1,9 +1,11 @@
 package xiaolin.web;
 
+import com.amazonaws.services.s3.model.Region;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import org.apache.http.client.fluent.Request;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +21,17 @@ import xiaolin.dtos.user.UserDetailDTO;
 import xiaolin.entities.Customer;
 import xiaolin.entities.User;
 import xiaolin.entities.Wallet;
+import xiaolin.generator.QRCodeGenerator;
 import xiaolin.services.ICustomerService;
 import xiaolin.services.IFoodStallService;
 import xiaolin.services.IUserService;
 import xiaolin.services.IWalletService;
+import xiaolin.uploader.S3Uploader;
+import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
+
+import java.io.File;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/user")
@@ -49,6 +57,13 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Value("${amazonProperties.accessKey}")
+    private String accessKey;
+    @Value("${amazonProperties.secretKey}")
+    private String secretKey;
+    @Value("${amazonProperties.bucket}")
+    private String bucket;
 
     @RequestMapping(value = "/customer/social-account", method = RequestMethod.POST)
     @ResponseBody
@@ -79,11 +94,22 @@ public class UserController {
                 newWallet.setInUseBalances(0);
                 newWallet.setBalances(0);
                 newWallet.setCustomer(cus);
-
                 cus.setWallet(newWallet);
                 Customer customer = customerService.createNewCustomer(cus);
                 newWallet.setId(customer.getWallet().getId());
+
+                Long currentTime = new Date().getTime();
+                QRCodeGenerator.generateQRCodeImage(newWallet.getId().toString(), 350, 350, "QRCode_" + currentTime + ".png");
+                // upload to S3
+                Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
+                String url = uploader.upload(new File("QRCode_" + currentTime + ".png"));
+                newWallet.setQrCode(url);
+                walletService.saveWallet(newWallet);
+
                 result = newWallet;
+
+                // clean up
+                new File("QRCode_" + currentTime + ".png").delete();
             } else {
                 if (cus.isActive()) {
                     result = walletService.searchCustomerWalletByCustomerId(cus.getId());

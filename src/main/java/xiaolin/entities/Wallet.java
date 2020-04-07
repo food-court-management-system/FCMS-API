@@ -27,6 +27,9 @@ public class Wallet implements Serializable {
     @Column(name = "is_active")
     private boolean isActive;
 
+    @Column(name = "qr_code")
+    private String qrCode;
+
     @OneToOne
     @JsonIgnore
     private Customer customer;
