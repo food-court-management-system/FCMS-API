@@ -30,6 +30,7 @@ import xiaolin.uploader.S3Uploader;
 import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Date;
 
@@ -76,12 +77,10 @@ public class UserController {
         } else {
             link = String.format(environment.getProperty("facebook.link.get.profile"), accessToken);
         }
-        System.out.println("link: " + link);
         try {
             String response = Request.Get(link).execute().returnContent().asString();
             ObjectMapper mapper = new ObjectMapper();
             email = mapper.readTree(response).get("email").textValue();
-            System.out.println("email: " + email);
             Customer cus = customerService.checkExistCustomer(provider, email);
             if (cus == null) {
                 cus = new Customer();
@@ -98,18 +97,17 @@ public class UserController {
                 Customer customer = customerService.createNewCustomer(cus);
                 newWallet.setId(customer.getWallet().getId());
 
+                // QRCODE
                 Long currentTime = new Date().getTime();
-                QRCodeGenerator.generateQRCodeImage(newWallet.getId().toString(), 350, 350, "QRCode_" + currentTime + ".png");
+                BufferedImage bufferedImage = QRCodeGenerator.generateQRCodeImage(newWallet.getId().toString(), "QRCode_" + currentTime + ".jpg");
+
                 // upload to S3
                 Uploader uploader = new S3Uploader(accessKey, secretKey, bucket, Region.AP_Singapore.toString());
-                String url = uploader.upload(new File("QRCode_" + currentTime + ".png"));
+                String url = uploader.upload(bufferedImage, "QRCode_" + currentTime + ".jpg");
                 newWallet.setQrCode(url);
                 walletService.saveWallet(newWallet);
 
                 result = newWallet;
-
-                // clean up
-                new File("QRCode_" + currentTime + ".png").delete();
             } else {
                 if (cus.isActive()) {
                     result = walletService.searchCustomerWalletByCustomerId(cus.getId());
