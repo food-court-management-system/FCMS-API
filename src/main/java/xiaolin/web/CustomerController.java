@@ -8,14 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import xiaolin.dtos.CustomerDto;
 import xiaolin.dtos.CustomerStatusDTO;
 import xiaolin.dtos.ScanQrCodeRes;
-import xiaolin.entities.Customer;
-import xiaolin.entities.Food;
-import xiaolin.entities.Rating;
-import xiaolin.entities.Wallet;
-import xiaolin.services.ICustomerService;
-import xiaolin.services.IFoodService;
-import xiaolin.services.IRatingService;
-import xiaolin.services.IWalletService;
+import xiaolin.entities.*;
+import xiaolin.services.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +32,9 @@ public class CustomerController {
 
     @Autowired
     IFoodService foodService;
+
+    @Autowired
+    IFoodStallService foodStallService;
 
     @RequestMapping(value = "/wallet/{id:\\d+}/edit", method = RequestMethod.PUT)
     @ResponseBody
@@ -204,7 +201,7 @@ public class CustomerController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/customer/{id:\\d+}/rate/{food-id:\\d+}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id:\\d+}/rate/{food-id:\\d+}", method = RequestMethod.POST)
     public ResponseEntity<Object> ratingFoodStall(@PathVariable("food-id") Long foodId,
                                                   @PathVariable("id") Long customerId,
                                                   @RequestParam("star") Float ratingStar) {
@@ -216,6 +213,12 @@ public class CustomerController {
         Rating rating = new Rating();
         rating.setRatingStar(ratingStar);
         rating.setRatingDate(LocalDate.now());
+
+        RatingKey key = new RatingKey();
+        key.setCustomerId(customerId);
+        key.setFoodId(foodId);
+        rating.setId(key);
+
         Customer customer = customerService.getCustomerById(customerId);
         rating.setCustomer(customer);
         Food food = foodService.getFoodDetailById(foodId);
@@ -223,6 +226,16 @@ public class CustomerController {
         float foodNewRating = (food.getFoodRating() + ratingStar) / 2;
         food.setFoodRating(foodNewRating);
         foodService.saveFood(food);
+
+        FoodStall foodStall = foodStallService.getFoodStallDetail(food.getFoodStall().getFoodStallId());
+        List<Food> menu = foodService.getFoodStallMenu(foodStall.getFoodStallId());
+        float totalRating = 0;
+        for (Food f : menu) {
+            totalRating += f.getFoodRating();
+        }
+        foodStall.setFoodStallRating(totalRating);
+        foodStallService.saveFoodStallToDB(foodStall);
+
         Rating result = ratingService.logRating(rating);
         if (result != null) {
             return new ResponseEntity<>(result, HttpStatus.OK);
