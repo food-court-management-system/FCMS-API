@@ -203,23 +203,25 @@ public class CustomerController {
     @ResponseBody
     @RequestMapping(value = "/{id:\\d+}/rate/{food-id:\\d+}", method = RequestMethod.POST)
     public ResponseEntity<Object> ratingFoodStall(@PathVariable("food-id") Long foodId,
-                                                  @PathVariable("id") Long customerId,
+                                                  @PathVariable("id") Long walletId,
                                                   @RequestParam("star") Float ratingStar) {
         JsonObject jsonObject = new JsonObject();
         if(ratingStar == null) {
             jsonObject.addProperty("message", "Rating must not be empty");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
+        Wallet wallet = walletService.findById(walletId);
+
         Rating rating = new Rating();
         rating.setRatingStar(ratingStar);
         rating.setRatingDate(LocalDate.now());
 
         RatingKey key = new RatingKey();
-        key.setCustomerId(customerId);
+        key.setCustomerId(wallet.getCustomer().getId());
         key.setFoodId(foodId);
         rating.setId(key);
 
-        Customer customer = customerService.getCustomerById(customerId);
+        Customer customer = customerService.getCustomerById(wallet.getCustomer().getId());
         rating.setCustomer(customer);
         Food food = foodService.getFoodDetailById(foodId);
         rating.setFood(food);
