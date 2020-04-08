@@ -1,19 +1,20 @@
 package xiaolin.web;
 
+import org.hibernate.mapping.Collection;
+import org.omg.CORBA.Current;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import xiaolin.dtos.CartDto;
-import xiaolin.dtos.CartItemDto;
-import xiaolin.dtos.CartItemRes;
-import xiaolin.dtos.CartResultDTO;
+import xiaolin.dtos.*;
 import xiaolin.entities.*;
 import xiaolin.services.ICartService;
 import xiaolin.services.ICustomerService;
+import xiaolin.services.IFoodStallService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/cart")
@@ -24,6 +25,9 @@ public class CartController {
 
     @Autowired
     ICustomerService customerService;
+
+    @Autowired
+    IFoodStallService foodStallService;
 
     @ResponseBody
     @RequestMapping(value = "/history/{walletId:\\d+}", method = RequestMethod.GET)
@@ -96,32 +100,47 @@ public class CartController {
     @ResponseBody
     @RequestMapping(value = "/{id:\\d+}/in-progress/detail", method = RequestMethod.GET)
     public ResponseEntity<Object> getAllCartInProgressForCustomer(@PathVariable("id") Long walletId) {
-//        Customer customer = customerService.getCustomerById(customerId);
         List<Cart> listAllInProgressCart = cartService.getHistoryOrder(walletId);
-        List<CartResultDTO> result = new ArrayList<>();
+        List<CurrentOrderDto> result = new ArrayList<>();
         for(Cart c: listAllInProgressCart) {
             if (c.getCartStatus() == Status.INPROGRESS || c.getCartStatus() == Status.PENDING) {
                 List<CartItem> find = cartService.getOrderDetail(c.getId());
-                List<CartItemRes> cartItemResList = new ArrayList<>();
-                for (CartItem cartItem : find) {
-                    CartItemRes cartItemRes = new CartItemRes();
-                    cartItemRes.setFoodId(cartItem.getFoodId().getId());
-                    cartItemRes.setFoodName(cartItem.getFoodId().getFoodName());
-                    cartItemRes.setFoodStallId(cartItem.getFoodId().getFoodStall().getFoodStallId());
-                    cartItemRes.setFoodStallName(cartItem.getFoodId().getFoodStall().getFoodStallName());
-                    cartItemRes.setId(cartItem.getId());
-                    cartItemRes.setPurchasedPrice(cartItem.getPurchasedPrice());
-                    cartItemRes.setQuantity(cartItem.getQuantity());
-                    cartItemRes.setNote(cartItem.getNote());
-                    cartItemRes.setFoodStatus(cartItem.getFoodStatus().toString());
-                    cartItemResList.add(cartItemRes);
+                for (CartItem ci: find) {
+                    CurrentOrderDto currentOrderDto = new CurrentOrderDto();
+                    currentOrderDto.setFoodStallId(ci.getFoodId().getFoodStall().getFoodStallId());
+                    currentOrderDto.setFoodStallName(ci.getFoodId().getFoodStall().getFoodStallName());
+                    currentOrderDto.setCartItems(new ArrayList<>());
+                    result.add(currentOrderDto);
                 }
-                CartResultDTO cartResultDTO = new CartResultDTO();
-                cartResultDTO.setCartStatus(c.getCartStatus());
-                cartResultDTO.setId(c.getId());
-                cartResultDTO.setTotalPrice(c.getTotalPrice());
-                cartResultDTO.setCartItems(cartItemResList);
-                result.add(cartResultDTO);
+            }
+        }
+        List<Long> ids = result.stream().map(CurrentOrderDto::getFoodStallId).distinct().collect(Collectors.toList());
+        result = new ArrayList<>();
+        for (Long id: ids) {
+            FoodStall foodStall = foodStallService.getFoodStallDetail(id.longValue());
+            CurrentOrderDto currentOrderDto = new CurrentOrderDto();
+            currentOrderDto.setFoodStallId(foodStall.getFoodStallId());
+            currentOrderDto.setFoodStallName(foodStall.getFoodStallName());
+            currentOrderDto.setCartItems(new ArrayList<>());
+            result.add(currentOrderDto);
+        }
+        for(Cart c: listAllInProgressCart) {
+            if (c.getCartStatus() == Status.INPROGRESS || c.getCartStatus() == Status.PENDING) {
+                List<CartItem> find = cartService.getOrderDetail(c.getId());
+                for (CartItem ci: find) {
+                    for (CurrentOrderDto cod: result) {
+                        if (ci.getFoodId().getFoodStall().getFoodStallId() == cod.getFoodStallId()) {
+                            CartItemRes cartItemRes = new CartItemRes();
+                            cartItemRes.setFoodStatus(ci.getFoodStatus().toString());
+                            cartItemRes.setFoodName(ci.getFoodId().getFoodName());
+                            cartItemRes.setId(ci.getId());
+                            cartItemRes.setNote(ci.getNote());
+                            cartItemRes.setQuantity(ci.getQuantity());
+                            cartItemRes.setPurchasedPrice(ci.getPurchasedPrice());
+                            cod.getCartItems().add(cartItemRes);
+                        }
+                    }
+                }
             }
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
