@@ -129,7 +129,7 @@ public class CartController {
                 List<CartItem> find = cartService.getOrderDetail(c.getId());
                 for (CartItem ci: find) {
                     for (CurrentOrderDto cod: result) {
-                        if (ci.getFoodId().getFoodStall().getFoodStallId() == cod.getFoodStallId()) {
+                        if (ci.getFoodId().getFoodStall().getFoodStallId().longValue() == cod.getFoodStallId().longValue()) {
                             CartItemRes cartItemRes = new CartItemRes();
                             cartItemRes.setFoodStatus(ci.getFoodStatus().toString());
                             cartItemRes.setFoodName(ci.getFoodId().getFoodName());
