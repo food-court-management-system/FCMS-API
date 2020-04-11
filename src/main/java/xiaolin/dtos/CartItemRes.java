@@ -12,6 +12,7 @@ public class CartItemRes {
     private int quantity;
     private String note;
     private String foodStatus;
+    private String reason;
     private float purchasedPrice;
 
 }

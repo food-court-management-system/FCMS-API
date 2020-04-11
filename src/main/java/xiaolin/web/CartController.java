@@ -49,6 +49,9 @@ public class CartController {
             cartItemRes.setId(cartItem.getId());
             cartItemRes.setPurchasedPrice(cartItem.getPurchasedPrice());
             cartItemRes.setQuantity(cartItem.getQuantity());
+            if (cartItem.getFoodStatus().equals(FoodStatus.CANCEL)) {
+                cartItemRes.setReason(cartItem.getReason());
+            }
             cartItemRes.setNote(cartItem.getNote());
             result.add(cartItemRes);
         }
@@ -137,6 +140,9 @@ public class CartController {
                             cartItemRes.setNote(ci.getNote());
                             cartItemRes.setQuantity(ci.getQuantity());
                             cartItemRes.setPurchasedPrice(ci.getPurchasedPrice());
+                            if (ci.getFoodStatus().equals(FoodStatus.CANCEL)) {
+                                cartItemRes.setReason(ci.getReason());
+                            }
                             cod.getCartItems().add(cartItemRes);
                         }
                     }
@@ -144,5 +150,12 @@ public class CartController {
             }
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/cancel", method = RequestMethod.PUT)
+    public ResponseEntity<Object> cancelOrder(@RequestBody CancelOrderDTO cancelOrderDTO) {
+        cartService.cancelOrder(cancelOrderDTO.getId(), cancelOrderDTO.getReason());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -38,4 +38,8 @@ public class CartItem implements Serializable {
     @ManyToOne
     @JsonIgnore
     private Cart cart;
+
+    @Column(name = "reason")
+    @JsonIgnore
+    private String reason;
 }

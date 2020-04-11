@@ -126,6 +126,9 @@ public class CartService implements ICartService{
         result.setPurchasedPrice(cartItem.getPurchasedPrice());
         result.setFoodName(cartItem.getFoodId().getFoodName());
         result.setId(cartItem.getId());
+        if (cartItem.getFoodStatus().equals(FoodStatus.CANCEL)) {
+            result.setReason(cartItem.getReason());
+        }
         result.setFoodStatus(cartItem.getFoodStatus().toString());
         return result;
     }
@@ -160,5 +163,32 @@ public class CartService implements ICartService{
         cartRepository.save(cart);
     }
 
+    @Override
+    public void cancelOrder(Long cartItemId, String reason) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).get();
+        Cart cart = cartItem.getCart();
+        if (!cartItem.getFoodStatus().equals(FoodStatus.CANCEL)) {
+            cartItem.setFoodStatus(FoodStatus.CANCEL);
+            cartItem.setReason(reason);
+            cartItemRepository.save(cartItem);
 
+            Wallet wallet = cart.getWallet();
+            wallet.setBalances(wallet.getBalances() + cartItem.getPurchasedPrice());
+            walletRepository.save(wallet);
+        }
+
+        boolean done = true;
+        List<CartItem> cartItems = cartItemRepository.findAllByCart_Id(cart.getId());
+        for (int i = 0; i < cartItems.size(); i++) {
+            FoodStatus fs = cartItems.get(i).getFoodStatus();
+            if (fs == FoodStatus.QUEUE || fs == FoodStatus.INPROGRESS || fs == FoodStatus.READY) {
+                done = false;
+                break;
+            }
+        }
+        if (done) {
+            cart.setCartStatus(Status.DONE);
+        }
+        cartRepository.save(cart);
+    }
 }
