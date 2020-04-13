@@ -178,6 +178,7 @@ public class CartService implements ICartService{
         }
 
         boolean done = true;
+        boolean cancel = false;
         List<CartItem> cartItems = cartItemRepository.findAllByCart_Id(cart.getId());
         for (int i = 0; i < cartItems.size(); i++) {
             FoodStatus fs = cartItems.get(i).getFoodStatus();
@@ -186,7 +187,15 @@ public class CartService implements ICartService{
                 break;
             }
         }
-        if (done) {
+        List<FoodStatus> cartItemsIds = cartItems.stream().map(CartItem::getFoodStatus)
+                .filter(ci -> FoodStatus.CANCEL.equals(ci))
+                .collect(Collectors.toList());
+        if (cartItemsIds.size() == cartItems.size()) {
+            cancel = true;
+        }
+        if (cancel) {
+            cart.setCartStatus(Status.CANCEL);
+        } else if (done) {
             cart.setCartStatus(Status.DONE);
         }
         cartRepository.save(cart);
