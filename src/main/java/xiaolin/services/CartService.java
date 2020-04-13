@@ -191,4 +191,9 @@ public class CartService implements ICartService{
         }
         cartRepository.save(cart);
     }
+
+    @Override
+    public List<CartItem> getAllCancelCartItemInFoodStall(List<Long> foodId) {
+        return cartItemRepository.findCancelCartItemByFoodId(foodId);
+    }
 }

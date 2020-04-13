@@ -25,4 +25,6 @@ public interface ICartService {
     void updateStatusOrderDetail(Long cartItemId, FoodStatus foodStatus);
 
     void cancelOrder(Long cartItemId, String reason);
+
+    List<CartItem> getAllCancelCartItemInFoodStall(List<Long> foodId);
 }

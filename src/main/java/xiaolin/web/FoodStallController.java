@@ -9,17 +9,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import xiaolin.dtos.CancelOrderDetailDTO;
 import xiaolin.dtos.food.FoodCreateDTO;
 import xiaolin.dtos.foodstall.FoodStallDetailDTO;
 import xiaolin.dtos.user.UserDetailDTO;
-import xiaolin.entities.Food;
-import xiaolin.entities.FoodStall;
-import xiaolin.entities.Type;
-import xiaolin.entities.User;
-import xiaolin.services.IFoodService;
-import xiaolin.services.IFoodStallService;
-import xiaolin.services.ITypeService;
-import xiaolin.services.IUserService;
+import xiaolin.entities.*;
+import xiaolin.services.*;
 import xiaolin.uploader.S3Uploader;
 import xiaolin.uploader.Uploader;
 import xiaolin.util.FCMSUtil;
@@ -47,6 +42,9 @@ public class FoodStallController {
 
     @Autowired
     IUserService userService;
+
+    @Autowired
+    ICartService cartService;
 
     @Value("${amazonProperties.accessKey}")
     private String accessKey;
@@ -482,6 +480,32 @@ public class FoodStallController {
             dto.setFoodStallRating(foodStall.getFoodStallRating());
             result.add(dto);
         }
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/{id}/cancel-orders", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAllCancelOrders(@PathVariable("id") Long foodStallId) {
+        List<Food> menu = foodService.getFoodStallMenu(foodStallId);
+        List<CancelOrderDetailDTO> result = new ArrayList<>();
+        List<Long> foodIds = new ArrayList<>();
+        for(Food f: menu) {
+            foodIds.add(f.getId());
+        }
+
+        List<CartItem> cancelCartItems = cartService.getAllCancelCartItemInFoodStall(foodIds);
+        for(CartItem ci: cancelCartItems) {
+            CancelOrderDetailDTO cancelOrderDetailDTO = new CancelOrderDetailDTO();
+            cancelOrderDetailDTO.setId(ci.getId());
+            cancelOrderDetailDTO.setReason(ci.getReason());
+            cancelOrderDetailDTO.setPurchasedPrice(ci.getPurchasedPrice());
+            cancelOrderDetailDTO.setQuantity(ci.getQuantity());
+            cancelOrderDetailDTO.setPurchasedDate(ci.getCart().getPurchaseDate().toString());
+            cancelOrderDetailDTO.setFoodName(ci.getFoodId().getFoodName());
+            result.add(cancelOrderDetailDTO);
+        }
+
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }
