@@ -415,6 +415,9 @@ public class FoodStallController {
                 folder.listFiles()[0].delete();
                 folder.delete();
 
+                // tao push đây
+                // Test thử SNS nha
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
