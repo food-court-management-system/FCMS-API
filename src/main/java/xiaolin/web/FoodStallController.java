@@ -417,6 +417,7 @@ public class FoodStallController {
 
                 // tao push đây
                 // Test thử SNS nha
+                // Test SNS Lần thứ 2
 
             } catch (Exception e) {
                 e.printStackTrace();
